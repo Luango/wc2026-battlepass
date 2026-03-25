@@ -259,6 +259,105 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 .hbar{height:3px;background:rgba(0,0,0,.5);border-radius:99px;overflow:hidden}
 .hbar-fill{height:100%;border-radius:99px;transition:width .5s}
 
+/* ── GAME FEEL ANIMATIONS ── */
+@keyframes ripple{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:.55}
+  100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}
+}
+@keyframes pulse-gold{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,160,82,0)}
+  50%{box-shadow:0 0 0 8px rgba(200,160,82,.25)}
+}
+@keyframes pulse-green{
+  0%,100%{box-shadow:0 0 0 0 rgba(90,170,94,0)}
+  50%{box-shadow:0 0 0 12px rgba(90,170,94,.25)}
+}
+@keyframes pulse-red{
+  0%,100%{box-shadow:0 0 0 0 rgba(201,68,68,0)}
+  50%{box-shadow:0 0 0 10px rgba(201,68,68,.2)}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-6px)}
+  30%{transform:translateX(5px)}
+  45%{transform:translateX(-4px)}
+  60%{transform:translateX(3px)}
+  75%{transform:translateX(-2px)}
+}
+@keyframes coin-pop{
+  0%{transform:scale(1);filter:brightness(1)}
+  35%{transform:scale(1.35);filter:brightness(1.6)}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+@keyframes glow-in{
+  0%{box-shadow:0 0 0 0 rgba(200,160,82,0);transform:scale(1)}
+  50%{box-shadow:0 0 18px 4px rgba(200,160,82,.4);transform:scale(1.04)}
+  100%{box-shadow:0 0 0 0 rgba(200,160,82,0);transform:scale(1)}
+}
+@keyframes flash-green{
+  0%{background:rgba(90,170,94,.5)}
+  100%{background:transparent}
+}
+@keyframes flash-red{
+  0%{background:rgba(201,68,68,.4)}
+  100%{background:transparent}
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(0) rotate(0deg);opacity:1}
+  100%{transform:translateY(120px) rotate(720deg);opacity:0}
+}
+@keyframes tier-burst{
+  0%{transform:scale(0.5);opacity:0;filter:brightness(2)}
+  40%{transform:scale(1.3);opacity:1;filter:brightness(1.8)}
+  100%{transform:scale(1);opacity:1;filter:brightness(1)}
+}
+@keyframes slide-up-in{
+  0%{transform:translateY(12px);opacity:0}
+  100%{transform:translateY(0);opacity:1}
+}
+@keyframes odds-flash{
+  0%{color:var(--gold-light);text-shadow:0 0 12px rgba(240,200,112,.8)}
+  100%{color:var(--gold-light);text-shadow:none}
+}
+@keyframes stamp{
+  0%{transform:scale(2.2);opacity:0}
+  50%{transform:scale(.92);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+.anim-ripple{position:absolute;width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,160,82,.45),transparent 70%);
+  pointer-events:none;z-index:999;animation:ripple .5s ease-out forwards}
+.anim-pulse-gold{animation:pulse-gold .6s ease}
+.anim-pulse-green{animation:pulse-green .8s ease}
+.anim-pulse-red{animation:pulse-red .6s ease}
+.anim-shake{animation:shake .4s ease}
+.anim-coin-pop{animation:coin-pop .4s ease}
+.anim-glow{animation:glow-in .5s ease}
+.anim-flash-green{animation:flash-green .6s ease forwards}
+.anim-flash-red{animation:flash-red .5s ease forwards}
+.anim-tier-burst{animation:tier-burst .6s cubic-bezier(.17,.67,.35,1.2)}
+.anim-slide-up{animation:slide-up-in .3s ease-out}
+.anim-odds-flash{animation:odds-flash .5s ease}
+.anim-stamp{animation:stamp .4s cubic-bezier(.17,.67,.35,1.2)}
+.confetti-piece{position:fixed;width:8px;height:8px;pointer-events:none;z-index:10000;
+  border-radius:1px;animation:confetti-fall 1.2s ease-in forwards}
+/* bet option hover lift */
+.bopt{transition:all .15s,transform .12s}
+.bopt:hover{transform:translateY(-2px)}
+.bopt:active{transform:translateY(0) scale(.96);transition:transform .06s}
+.bopt.sel{transform:translateY(-1px)}
+/* button press feedback */
+.btn-g:active,.btn-r:active,.btn-back:active,.btn-bet:active,.bkt-open-btn:active,
+.hud-nav:active,.lock-pred-btn:active{transform:scale(.93);transition:transform .06s}
+/* match card click feel */
+.mc-clickable:active{transform:scale(.985);transition:transform .06s}
+/* tab switch */
+.bet-tab:active,.lineup-tab:active{transform:scale(.94);transition:transform .05s}
+/* toast entrance */
+#toast.on{animation:slide-up-in .25s ease-out}
+/* tier dot animation */
+.tier-dot.cur{animation:pulse-gold 1.5s infinite}
+
 /* scrollbar */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -636,6 +735,201 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════
+// GAME FEEL — Audio + Visual Feedback Engine
+// ═══════════════════════════════════════════════════════════
+const SFX=(()=>{
+  let ctx=null;
+  function ensure(){
+    if(!ctx)try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}
+    if(ctx.state==='suspended')ctx.resume();
+    return ctx;
+  }
+  function play(fn){try{const c=ensure();if(c)fn(c);}catch(e){}}
+
+  // ── Tiny synth helpers ──
+  function tone(c,freq,dur,type='sine',vol=.12,decay=dur){
+    const o=c.createOscillator(),g=c.createGain();
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+decay);
+    o.connect(g);g.connect(c.destination);
+    o.start(c.currentTime);o.stop(c.currentTime+dur);
+  }
+  function noise(c,dur,vol=.06){
+    const buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+    const s=c.createBufferSource(),g=c.createGain(),f=c.createBiquadFilter();
+    s.buffer=buf;f.type='highpass';f.frequency.value=3000;
+    g.gain.setValueAtTime(vol,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);
+    s.connect(f);f.connect(g);g.connect(c.destination);
+    s.start();s.stop(c.currentTime+dur);
+  }
+
+  return{
+    // UI click – short bright tick
+    click(){play(c=>{tone(c,1800,.06,'square',.06,.06);});},
+    // Tab switch – soft two-note blip
+    tab(){play(c=>{tone(c,800,.05,'sine',.08,.05);tone(c,1200,.07,'sine',.06,.07);});},
+    // Hover – ultra subtle
+    hover(){play(c=>{tone(c,2400,.03,'sine',.03,.03);});},
+    // Select / pick option – satisfying pop
+    select(){play(c=>{
+      tone(c,600,.04,'sine',.12,.04);
+      setTimeout(()=>tone(c,900,.06,'sine',.1,.06),30);
+    });},
+    // Deselect
+    deselect(){play(c=>{tone(c,500,.04,'sine',.06,.04);});},
+    // Place bet – coin clink
+    betPlace(){play(c=>{
+      tone(c,1400,.05,'square',.1,.05);
+      setTimeout(()=>{tone(c,2100,.06,'square',.08,.06);noise(c,.03,.04);},50);
+      setTimeout(()=>tone(c,2800,.08,'sine',.07,.08),100);
+    });},
+    // Win – triumphant ascending arpeggio
+    win(){play(c=>{
+      [523,659,784,1047].forEach((f,i)=>{
+        setTimeout(()=>tone(c,f,.15,'sine',.12,.15),i*80);
+      });
+      setTimeout(()=>noise(c,.08,.05),340);
+    });},
+    // Big win – major chord fanfare
+    bigWin(){play(c=>{
+      [523,659,784].forEach(f=>tone(c,f,.3,'sine',.1,.3));
+      setTimeout(()=>{
+        [659,784,1047].forEach(f=>tone(c,f,.3,'sine',.1,.3));
+      },250);
+      setTimeout(()=>{
+        [784,1047,1319].forEach(f=>tone(c,f,.5,'sine',.12,.5));
+        noise(c,.12,.06);
+      },500);
+    });},
+    // Loss – descending minor
+    lose(){play(c=>{
+      tone(c,440,.15,'triangle',.1,.15);
+      setTimeout(()=>tone(c,370,.15,'triangle',.08,.15),120);
+      setTimeout(()=>tone(c,330,.25,'triangle',.07,.25),240);
+    });},
+    // Push/refund – neutral
+    push(){play(c=>{
+      tone(c,600,.1,'sine',.08,.1);
+      setTimeout(()=>tone(c,600,.1,'sine',.06,.1),120);
+    });},
+    // Tier up – epic fanfare
+    tierUp(){play(c=>{
+      noise(c,.06,.04);
+      [523,659,784,1047,1319].forEach((f,i)=>{
+        setTimeout(()=>tone(c,f,.2+(i*.05),'sine',.1+i*.01,.2+i*.05),i*70);
+      });
+      setTimeout(()=>{
+        [1047,1319,1568].forEach(f=>tone(c,f,.4,'sine',.1,.4));
+        noise(c,.15,.05);
+      },400);
+    });},
+    // Coin add – cha-ching
+    coins(){play(c=>{
+      tone(c,3200,.04,'square',.07,.04);
+      setTimeout(()=>tone(c,4200,.06,'square',.05,.06),40);
+    });},
+    // Navigate – soft whoosh
+    nav(){play(c=>{noise(c,.08,.04);tone(c,400,.05,'sine',.04,.05);});},
+    // Sim match – dramatic drum
+    sim(){play(c=>{
+      noise(c,.08,.08);
+      tone(c,120,.12,'triangle',.12,.12);
+      setTimeout(()=>{noise(c,.06,.06);tone(c,150,.1,'triangle',.1,.1);},80);
+    });},
+    // Error / warning
+    error(){play(c=>{
+      tone(c,200,.12,'sawtooth',.08,.12);
+      setTimeout(()=>tone(c,180,.15,'sawtooth',.06,.15),80);
+    });},
+    // Formation change
+    formation(){play(c=>{
+      tone(c,700,.05,'sine',.07,.05);
+      setTimeout(()=>tone(c,900,.05,'sine',.07,.05),60);
+      setTimeout(()=>tone(c,700,.05,'sine',.05,.05),120);
+    });},
+    // Lock prediction
+    lock(){play(c=>{
+      tone(c,800,.06,'square',.09,.06);
+      setTimeout(()=>tone(c,1200,.08,'square',.07,.08),80);
+      setTimeout(()=>tone(c,1600,.12,'sine',.08,.12),160);
+    });},
+    // Calendar tick
+    calTick(){play(c=>{tone(c,1600,.02,'sine',.04,.02);});},
+  };
+})();
+
+// ── Visual FX helpers ──
+function spawnRipple(x,y){
+  const r=document.createElement('div');
+  r.className='anim-ripple';
+  r.style.left=x+'px';r.style.top=y+'px';
+  document.body.appendChild(r);
+  setTimeout(()=>r.remove(),500);
+}
+
+function spawnConfetti(x,y,count=20){
+  const colors=['#f0c870','#c8a052','#5aaa5e','#4488cc','#e86060','#fff','#ffaa00'];
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.left=(x+Math.random()*80-40)+'px';
+    p.style.top=(y-10)+'px';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.width=(4+Math.random()*6)+'px';
+    p.style.height=(4+Math.random()*6)+'px';
+    p.style.animationDuration=(0.8+Math.random()*0.8)+'s';
+    p.style.transform=`rotate(${Math.random()*360}deg)`;
+    const dx=(Math.random()-.5)*120;
+    p.style.animationName='none';
+    document.body.appendChild(p);
+    // Custom trajectory via JS
+    let vy=-3-Math.random()*4,vx=dx/30,ay=0.12,op=1,rot=Math.random()*15;
+    let px=parseFloat(p.style.left),py=parseFloat(p.style.top);
+    function step(){
+      vy+=ay;px+=vx;py+=vy;op-=0.015;rot+=8;
+      p.style.left=px+'px';p.style.top=py+'px';
+      p.style.opacity=Math.max(0,op);
+      p.style.transform=`rotate(${rot}deg)`;
+      if(op>0)requestAnimationFrame(step);else p.remove();
+    }
+    requestAnimationFrame(step);
+  }
+}
+
+function animateElement(el,cls,dur=600){
+  if(!el)return;
+  el.classList.remove(cls);
+  void el.offsetWidth; // force reflow
+  el.classList.add(cls);
+  setTimeout(()=>el.classList.remove(cls),dur);
+}
+
+function flashElement(el,color='gold',dur=400){
+  if(!el)return;
+  const cls=color==='green'?'anim-flash-green':color==='red'?'anim-flash-red':'anim-glow';
+  animateElement(el,cls,dur);
+}
+
+function coinPopAnimation(){
+  const coinEl=document.getElementById('h-coins');
+  if(coinEl)animateElement(coinEl,'anim-coin-pop',400);
+  const lpCoins=document.getElementById('lp-coins');
+  if(lpCoins)animateElement(lpCoins,'anim-coin-pop',400);
+}
+
+function shakeElement(el){animateElement(el,'anim-shake',400);}
+
+// ── Global click ripple on interactive elements ──
+document.addEventListener('click',(e)=>{
+  const t=e.target.closest('.btn-g,.btn-r,.btn-back,.btn-bet,.bkt-open-btn,.hud-nav,.mc-clickable,.bopt,.bet-tab,.lineup-tab,.lock-pred-btn,.hud-tick,.tier-dot');
+  if(t){spawnRipple(e.clientX,e.clientY);}
+},{passive:true});
+
 // ── TEAMS ──────────────────────────────────────────────────
 const TEAMS=[
   {id:'FRA',name:'France',     flag:'🇫🇷',str:92,group:'A'},
@@ -896,6 +1190,7 @@ function getAllMatchDays(){
 
 function setActiveDay(key){
   if(!key)return;
+  if(key!==activeDay)SFX.calTick();
   activeDay=key;
   const m=MS.find(m=>m.dateKey===key);
   if(m) activePhase=m.phaseId;
@@ -907,7 +1202,7 @@ function navDay(dir){
   const days=getAllMatchDays();
   const idx=days.findIndex(d=>d.key===activeDay);
   const ni=Math.max(0,Math.min(days.length-1,idx+dir));
-  if(days[ni]&&days[ni].key!==activeDay) setActiveDay(days[ni].key);
+  if(days[ni]&&days[ni].key!==activeDay){SFX.nav();setActiveDay(days[ni].key);}
 }
 
 // ── CALENDAR DRAG ──────────────────────────────────────────
@@ -1144,6 +1439,7 @@ let _tt;
 function toast(msg){
   const el=document.getElementById('toast');
   el.textContent=msg;el.className='on';
+  animateElement(el,'anim-slide-up',300);
   clearTimeout(_tt);_tt=setTimeout(()=>el.className='',3000);
 }
 
@@ -1174,7 +1470,16 @@ function addXP(n){
   const nt=Math.min(50,Math.floor(ST.xp/XP_PER_TIER)+1);
   if(nt>ST.tier){
     for(let t=ST.tier+1;t<=nt;t++) claimTier(t);
-    ST.tier=nt;toast(`🏆 TIER UP → TIER ${ST.tier}`);
+    ST.tier=nt;
+    SFX.tierUp();
+    toast(`🏆 TIER UP → TIER ${ST.tier}`);
+    // Confetti burst for tier up
+    const tierEl=document.getElementById('h-tier');
+    if(tierEl){
+      animateElement(tierEl,'anim-tier-burst',600);
+      const r=tierEl.getBoundingClientRect();
+      spawnConfetti(r.left+r.width/2,r.top,30);
+    }
   }
   saveState();updateAll();
 }
@@ -1182,7 +1487,7 @@ function claimTier(t){
   if(ST.claimed.includes(t))return;
   ST.claimed.push(t);
   const r=TIER_REWARDS[t-1];
-  if(!r.prem&&r.coins){ST.coins+=r.coins;toast(`🎁 Tier ${t}: +${r.coins} coins`);}
+  if(!r.prem&&r.coins){ST.coins+=r.coins;SFX.coins();coinPopAnimation();toast(`🎁 Tier ${t}: +${r.coins} coins`);}
 }
 
 // ── UPDATE ALL ─────────────────────────────────────────────
@@ -1373,8 +1678,8 @@ const BET_TYPES=[
 ];
 function switchBetTab(evt,mid,tabId){
   if(evt)evt.stopPropagation();
+  SFX.tab();
   betTabs[mid]=tabId;
-  // Clear pick when switching tabs
   delete picks[mid];
   renderMatches();
 }
@@ -1519,12 +1824,17 @@ function pickOpt(evt,mid,pick,el){
   if(evt&&evt.stopPropagation)evt.stopPropagation();
   const m=MS.find(x=>x.id===mid);
   if(!m||m.status==='settled'||ST.bets[mid])return;
-  // Find bopt container in preview panel or match card
   const container=document.getElementById('preview-right')
     ||document.querySelector(`.mc[data-mid="${mid}"]`);
+  const wasSel=el.classList.contains('sel');
   if(container)container.querySelectorAll('.bopt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel');
   picks[mid]=pick;
+  // Audio + visual
+  SFX.select();
+  animateElement(el,'anim-glow',500);
+  const oddsEl=el.querySelector('.odds,.odds-sm');
+  if(oddsEl)animateElement(oddsEl,'anim-odds-flash',500);
 }
 
 // ── PLACE BET ──────────────────────────────────────────────
@@ -1592,11 +1902,11 @@ function placeBet(evt,mid){
   const m=MS.find(x=>x.id===mid);
   if(!m||m.status!=='pending')return;
   const pick=picks[mid];
-  if(!pick){toast('Select an outcome first');return;}
+  if(!pick){SFX.error();toast('Select an outcome first');return;}
   const inp=document.getElementById(`bi-${mid}`);
   const amt=parseInt(inp.value)||0;
-  if(amt<10){toast('Minimum bet: 10 coins');return;}
-  if(amt>ST.coins){toast('Not enough coins!');return;}
+  if(amt<10){SFX.error();toast('Minimum bet: 10 coins');return;}
+  if(amt>ST.coins){SFX.error();shakeElement(document.getElementById('h-coins'));toast('Not enough coins!');return;}
   const tab=betTabs[mid]||'match';
   const ov=getOddsForPick(m,pick,tab);
   const lbl=betPickLabel(m,pick,tab);
@@ -1604,9 +1914,13 @@ function placeBet(evt,mid){
   ST.bets[mid]={type:tab,pick,amount:amt,odds:ov,status:'pending',payout:null,
                 phase:m.phase,home:m.home,away:m.away,date:m.date};
   addXP(15);saveState();
+  // Audio + visual feedback for bet placement
+  SFX.betPlace();
+  coinPopAnimation();
+  const betBtn=evt?.target?.closest('.btn-bet');
+  if(betBtn)animateElement(betBtn,'anim-pulse-gold',600);
   toast(`✅ ${amt} coins on ${lbl} @ ${ov}x`);
   renderMatches();
-  // Also refresh preview betting panel if open
   const rpanel=document.getElementById('preview-right');
   if(rpanel&&previewMode)renderPreviewBetting(rpanel, mid);
 }
@@ -1722,33 +2036,48 @@ function settle(m){
     if(outcome==='won'){
       bet.payout=Math.round(bet.amount*bet.odds);bet.status='won';ST.coins+=bet.payout;
       addXP(100);
-      if(!silent)toast(`🎉 ${h.name} ${m.score[0]}–${m.score[1]} ${a.name} · Won ${bet.payout}!`);
+      if(!silent){
+        const bigPay=bet.payout>=bet.amount*3;
+        bigPay?SFX.bigWin():SFX.win();
+        coinPopAnimation();
+        toast(`🎉 ${h.name} ${m.score[0]}–${m.score[1]} ${a.name} · Won ${bet.payout}!`);
+        // Green flash on header + confetti
+        const hdr=document.querySelector('header');
+        if(hdr)flashElement(hdr,'green',600);
+        const coinEl=document.getElementById('h-coins');
+        if(coinEl){const r=coinEl.getBoundingClientRect();spawnConfetti(r.left+r.width/2,r.top,bigPay?40:15);}
+      }
     } else if(outcome==='push'){
       bet.payout=bet.amount;bet.status='push';ST.coins+=bet.amount;
       addXP(15);
-      if(!silent)toast(`🤝 ${h.name} ${m.score[0]}–${m.score[1]} ${a.name} · Push — refunded ${bet.amount}`);
+      if(!silent){SFX.push();coinPopAnimation();toast(`🤝 ${h.name} ${m.score[0]}–${m.score[1]} ${a.name} · Push — refunded ${bet.amount}`);}
     } else {
       bet.payout=0;bet.status='lost';addXP(10);
-      if(!silent)toast(`😔 ${h.name} ${m.score[0]}–${m.score[1]} ${a.name} · Lost`);
+      if(!silent){SFX.lose();shakeElement(document.getElementById('h-coins'));toast(`😔 ${h.name} ${m.score[0]}–${m.score[1]} ${a.name} · Lost`);}
     }
   }
   // Advance winner to next knockout round
   if(['r32','r16','qf','sf'].includes(m.phaseId)) advanceWinner(m);
 }
 function simNext(){
-  // Prefer next pending on current day, then globally
   const next=MS.find(m=>m.dateKey===activeDay&&m.status==='pending'&&m.home!=='TBD')
            ||MS.find(m=>m.status==='pending'&&m.home!=='TBD');
-  if(!next){toast('No more matches to simulate');return;}
-  // Jump to the day of the match being simulated
+  if(!next){SFX.error();toast('No more matches to simulate');return;}
+  SFX.sim();
   if(next.dateKey){activeDay=next.dateKey;activePhase=next.phaseId;}
   settle(next);saveMatches();saveState();updateAll();renderMatches();
 }
 function simAll(){
   const p=MS.filter(m=>m.status==='pending'&&m.home!=='TBD');
-  if(!p.length){toast('No more matches');return;}
+  if(!p.length){SFX.error();toast('No more matches');return;}
+  SFX.sim();
   silent=true;p.forEach(m=>settle(m));silent=false;
-  saveMatches();saveState();toast(`⚡ Simulated ${p.length} matches`);updateAll();renderMatches();
+  saveMatches();saveState();toast(`⚡ Simulated ${p.length} matches`);
+  // Play win/loss summary sound
+  const bets=Object.values(ST.bets);
+  const anyWin=bets.some(b=>b.status==='won');
+  setTimeout(()=>{if(anyWin)SFX.win();else SFX.coins();coinPopAnimation();},300);
+  updateAll();renderMatches();
 }
 function resetGame(){
   if(!confirm('Reset all progress?'))return;
@@ -2057,6 +2386,7 @@ function openPreview(mid){
       closePreview();
     }
 
+    SFX.nav();
     previewMode=true;
     previewMatchId=mid;
     previewFormations={home:'4-3-3',away:'4-3-3'};
@@ -2111,6 +2441,7 @@ function openPreview(mid){
 
 // ── CLOSE PREVIEW ──────────────────────────────────────────
 function closePreview(){
+  SFX.nav();
   previewMode=false;
   previewMatchId=null;
   previewTeams={home:null,away:null};
@@ -2207,6 +2538,7 @@ function renderPreviewPanel(side, teamId, container){
 // ── TABBED LINEUP PANEL (LEFT) ─────────────────────────────
 let previewLineupTab='home';
 function switchLineupTab(side){
+  SFX.tab();
   previewLineupTab=side;
   const m=MS.find(x=>x.id===previewMatchId);
   if(!m)return;
@@ -2274,6 +2606,7 @@ function renderPreviewBetting(container, mid){
     </div>`;
 }
 function switchPreviewBetTab(mid,tabId){
+  SFX.tab();
   betTabs[mid]=tabId;
   delete picks[mid];
   const container=document.getElementById('preview-right');
@@ -2300,22 +2633,29 @@ function playerRowHTML(pl,squadIdx,slotIdx,side,teamId,isStarter){
 function lockPrediction(side, teamId){
   if(previewPredictions[side])return;
   previewPredictions[side]=true;
+  SFX.lock();
   addXP(25);
   toast(`⚡ Prediction locked for ${T[teamId].name}! +25 XP`);
   const btn=document.getElementById(`lockbtn-${side}`);
-  if(btn){btn.textContent='✓ PREDICTION LOCKED';btn.disabled=true;btn.classList.add('locked');}
+  if(btn){
+    btn.textContent='✓ PREDICTION LOCKED';btn.disabled=true;btn.classList.add('locked');
+    animateElement(btn,'anim-stamp',400);
+    const r=btn.getBoundingClientRect();
+    spawnConfetti(r.left+r.width/2,r.top,12);
+  }
 }
 
 function changeFormation(side, teamId, formation){
+  SFX.formation();
   previewFormations[side]=formation;
   applyFormation(side, formation);
-  // Re-render just the roster header (formation dropdown)
   const sel=document.getElementById(`formation-${side}`);
   if(sel)sel.value=formation;
   renderTacticalBoard();
 }
 
 function selectPlayer(side, squadIdx, teamId){
+  SFX.click();
   const prev=selectedPlayerId;
   selectedPlayerId=`${side}-${squadIdx}`;
 
@@ -2365,6 +2705,7 @@ function handlePlayerRowClick(side, squadIdx, teamId, isStarter){
   }
 
   if(starterIdx!==squadIdx&&swapStarterWithBench(side, teamId, starterIdx, squadIdx)){
+    SFX.formation();
     const squad=genSquad(teamId);
     const inName=squad[squadIdx]?squad[squadIdx].n:'Bench';
     toast(`🔁 ${inName} moved into the Starting XI`);
@@ -2811,10 +3152,12 @@ function drawBracketSVG(){
 }
 
 function openBracket(){
+  SFX.nav();
   document.getElementById('bracket-overlay').classList.add('open');
   renderBracket();
 }
 function closeBracket(){
+  SFX.click();
   document.getElementById('bracket-overlay').classList.remove('open');
 }
 function bktOpenMatch(id){
