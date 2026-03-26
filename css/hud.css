@@ -1,0 +1,172 @@
+/* ═══════════════════════════════════════════════════════════
+   DAY BANNER — Dota 2 Battle Pass style prominent day display
+   ═══════════════════════════════════════════════════════════ */
+
+.day-banner{
+  flex-shrink:0;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#0a0e18 0%,#0d1220 40%,#0a0e18 100%);
+  border-bottom:1px solid var(--border);
+  padding:18px 16px 14px;
+}
+.day-banner-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 100% at 50% 0%,rgba(200,160,82,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.day-banner-content{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;gap:24px;
+}
+.day-banner-center{
+  display:flex;flex-direction:column;align-items:center;gap:2px;min-width:200px;
+}
+.day-banner-phase{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);font-weight:600;
+}
+.day-banner-day{
+  display:flex;align-items:baseline;gap:8px;
+}
+.day-number{
+  font-size:32px;font-weight:900;letter-spacing:4px;
+  color:var(--gold-light);
+  text-shadow:0 0 30px rgba(240,200,112,.3),0 2px 8px rgba(0,0,0,.5);
+  line-height:1.1;
+}
+.day-total{
+  font-size:14px;font-weight:600;color:var(--muted);letter-spacing:1px;
+}
+.day-banner-date{
+  font-size:12px;color:var(--gold);letter-spacing:1px;font-weight:600;margin-top:2px;
+}
+.day-banner-matches{
+  font-size:10px;color:var(--muted);letter-spacing:.5px;margin-top:2px;
+}
+
+/* Nav arrows */
+.day-nav-arrow{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(200,160,82,.06);border:1px solid rgba(200,160,82,.2);
+  color:var(--gold);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.day-nav-arrow:hover{
+  background:rgba(200,160,82,.15);border-color:var(--gold);
+  color:var(--gold-light);transform:scale(1.08);
+}
+.day-nav-arrow:active{transform:scale(.95)}
+
+/* ═══════════════════════════════════════════════════════════
+   DAY STRIP — Horizontal scrollable day pills
+   ═══════════════════════════════════════════════════════════ */
+
+.day-strip-wrap{
+  flex-shrink:0;
+  background:linear-gradient(180deg,#080b12,#0a0e16);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+/* fade edges */
+.day-strip-wrap::before,.day-strip-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:40px;z-index:2;pointer-events:none;
+}
+.day-strip-wrap::before{left:0;background:linear-gradient(90deg,#080b12,transparent)}
+.day-strip-wrap::after{right:0;background:linear-gradient(270deg,#0a0e16,transparent)}
+
+.day-strip{
+  display:flex;gap:4px;padding:8px 44px;
+  overflow-x:auto;scroll-behavior:smooth;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.day-strip::-webkit-scrollbar{display:none}
+
+.day-pill{
+  flex:0 0 auto;display:flex;flex-direction:column;align-items:center;
+  padding:6px 12px 5px;border-radius:4px;cursor:pointer;
+  border:1px solid transparent;transition:all .2s;
+  min-width:54px;position:relative;
+}
+.day-pill-num{font-size:11px;font-weight:800;letter-spacing:.5px;line-height:1}
+.day-pill-date{font-size:7px;letter-spacing:.3px;margin-top:2px;opacity:.7}
+.day-pill-dot{width:4px;height:4px;border-radius:50%;margin-top:3px}
+
+/* States */
+.day-pill.past{
+  background:rgba(90,170,94,.06);border-color:rgba(90,170,94,.15);
+  color:var(--green);
+}
+.day-pill.past .day-pill-dot{background:var(--green)}
+.day-pill.past:hover{background:rgba(90,170,94,.12);border-color:rgba(90,170,94,.3)}
+
+.day-pill.current{
+  background:rgba(200,160,82,.12);border-color:var(--gold);
+  color:var(--gold-light);
+  box-shadow:0 0 12px rgba(200,160,82,.2),inset 0 0 12px rgba(200,160,82,.05);
+}
+.day-pill.current .day-pill-dot{
+  background:var(--gold-light);
+  box-shadow:0 0 6px var(--gold);
+  animation:day-pulse 2s ease-in-out infinite;
+}
+
+.day-pill.future{
+  background:rgba(90,100,120,.04);border-color:rgba(90,100,120,.12);
+  color:var(--muted);opacity:.55;
+}
+.day-pill.future .day-pill-dot{background:rgba(90,100,120,.3)}
+.day-pill.future:hover{opacity:.8;background:rgba(90,100,120,.08)}
+
+.day-pill.has-bets::after{
+  content:'';position:absolute;top:3px;right:3px;
+  width:5px;height:5px;border-radius:50%;background:var(--gold);
+}
+
+@keyframes day-pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.5;transform:scale(1.5)}
+}
+
+/* Phase divider in day strip */
+.day-strip-phase{
+  flex:0 0 auto;display:flex;align-items:center;
+  padding:0 6px;
+  font-size:7px;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(200,160,82,.35);font-weight:700;white-space:nowrap;
+}
+
+/* NEXT DAY button */
+.btn-day{
+  background:linear-gradient(180deg,rgba(200,160,82,.18),rgba(200,160,82,.08));
+  border:1px solid var(--gold);
+  color:var(--gold-light);padding:6px 18px;border-radius:3px;cursor:pointer;
+  font-size:11px;font-weight:900;letter-spacing:1px;
+  text-transform:uppercase;transition:all .2s;
+  text-shadow:0 0 8px rgba(240,200,112,.3);
+}
+.btn-day:hover{
+  background:linear-gradient(180deg,rgba(200,160,82,.3),rgba(200,160,82,.15));
+  box-shadow:0 0 12px rgba(200,160,82,.2);
+}
+.btn-day:disabled{opacity:.35;cursor:not-allowed;filter:none;box-shadow:none}
+
+/* ═══════════════════════════════════════════════════════════
+   BOTTOM HUD (simplified — just XP bar)
+   ═══════════════════════════════════════════════════════════ */
+
+.hud{flex-shrink:0;
+     background:linear-gradient(0deg,#050709,#0d1018);
+     border-top:1px solid var(--border-hi);
+     display:flex;flex-direction:column;position:relative;
+     user-select:none;-webkit-user-select:none}
+.hud.hud-slim{height:30px}
+.hud::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+/* hud bottom bar */
+.hud-bar{flex:1;
+         display:flex;align-items:center;padding:0 20px;gap:16px}
+.hud-lbl{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;
+         color:var(--muted);white-space:nowrap}
+.hbar{height:4px;background:rgba(0,0,0,.5);border-radius:99px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:99px;transition:width .5s}

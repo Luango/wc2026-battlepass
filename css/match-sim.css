@@ -1,0 +1,426 @@
+/* ═══════════════════════════════════════════════════════════
+   MATCH VIEWER — Live tactical simulation overlay
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Overlay ────────────────────────────────────────────── */
+#match-viewer-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(5, 7, 12, 0.98);
+  display: flex; flex-direction: column;
+  animation: mv-fade-in 0.3s ease-out;
+}
+#match-viewer-overlay.mv-closing {
+  animation: mv-fade-out 0.3s ease-in forwards;
+}
+@keyframes mv-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mv-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+.mv-container {
+  display: flex; flex-direction: column;
+  height: 100%; overflow: hidden;
+}
+
+/* ── Top Bar ────────────────────────────────────────────── */
+.mv-topbar {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; height: 40px;
+  background: linear-gradient(180deg, #0d1018, #090c14);
+  border-bottom: 1px solid var(--border);
+}
+.mv-topbar-left { display: flex; align-items: center; gap: 12px; }
+.mv-phase-badge {
+  font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold-light); background: rgba(200, 160, 82, 0.12);
+  border: 1px solid rgba(200, 160, 82, 0.3); border-radius: 2px;
+  padding: 2px 10px;
+}
+.mv-venue-text { font-size: 11px; color: var(--muted); }
+.mv-close-btn {
+  background: rgba(200, 60, 60, 0.1); border: 1px solid rgba(200, 60, 60, 0.4);
+  color: #e08080; font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+  padding: 4px 14px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+}
+.mv-close-btn:hover { background: rgba(200, 60, 60, 0.2); border-color: rgba(200, 60, 60, 0.6); }
+
+/* ── Scoreboard ─────────────────────────────────────────── */
+.mv-scoreboard {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  padding: 10px 20px; gap: 24px;
+  background: linear-gradient(180deg, #0a0e16, #070a10);
+  border-bottom: 1px solid var(--border);
+}
+.mv-sb-team { display: flex; align-items: center; gap: 10px; flex: 1; }
+.mv-sb-home { justify-content: flex-end; }
+.mv-sb-away { justify-content: flex-start; }
+.mv-sb-name {
+  font-size: 16px; font-weight: 900; color: var(--text);
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.mv-sb-center { text-align: center; min-width: 120px; }
+.mv-sb-score {
+  font-size: 36px; font-weight: 900; color: var(--gold-light);
+  letter-spacing: 4px; line-height: 1;
+  text-shadow: 0 0 30px rgba(240, 200, 112, 0.3);
+}
+.mv-sb-clock {
+  font-size: 14px; font-weight: 700; color: var(--green);
+  margin-top: 2px; letter-spacing: 1px;
+}
+.mv-flag { width: 36px; height: 24px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+
+/* ── Main Area ──────────────────────────────────────────── */
+.mv-main {
+  flex: 1; display: grid; grid-template-columns: 1fr 280px;
+  min-height: 0; overflow: hidden;
+}
+.mv-pitch-area {
+  display: flex; flex-direction: column; min-height: 0;
+  padding: 12px; gap: 8px;
+}
+
+/* ── Pitch ──────────────────────────────────────────────── */
+.mv-pitch {
+  flex: 1; position: relative; border-radius: 6px; overflow: hidden;
+  background: linear-gradient(180deg, #1a5c1a, #145014);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  min-height: 200px;
+}
+/* Grass stripes */
+.mv-pitch::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent, transparent 8.33%,
+    rgba(255, 255, 255, 0.015) 8.33%, rgba(255, 255, 255, 0.015) 16.66%
+  );
+}
+
+/* Pitch markings — all positioned relative to the pitch container */
+/* Field outline uses an SVG approach for pixel-perfect connected lines */
+.mv-pitch-field {
+  position: absolute;
+  left: 5%; right: 5%; top: 5%; bottom: 5%;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+}
+.mv-pitch-center-line {
+  position: absolute; left: 50%; top: 0; bottom: 0; width: 0;
+  border-left: 2px solid rgba(255, 255, 255, 0.55);
+}
+.mv-pitch-center-circle {
+  position: absolute; left: 50%; top: 50%;
+  width: 18%; aspect-ratio: 1; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  transform: translate(-50%, -50%);
+}
+.mv-pitch-center-dot {
+  position: absolute; left: 50%; top: 50%;
+  width: 6px; height: 6px; background: rgba(255, 255, 255, 0.65);
+  border-radius: 50%; transform: translate(-50%, -50%);
+}
+/* Penalty areas — attached to field edge (border-left/right: none so they share the field outline) */
+.mv-pitch-penalty {
+  position: absolute; width: 16%; height: 50%; top: 25%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+}
+.mv-pen-left { left: 0; border-left: none; }
+.mv-pen-right { right: 0; border-right: none; }
+/* Goal areas (6-yard box) */
+.mv-pitch-goal {
+  position: absolute; width: 6%; height: 22%; top: 39%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+}
+.mv-goal-left { left: 0; border-left: none; }
+.mv-goal-right { right: 0; border-right: none; }
+/* 6-yard boxes */
+.mv-pitch-6yard {
+  position: absolute; width: 9%; height: 32%; top: 34%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+}
+.mv-6y-left { left: 0; border-left: none; }
+.mv-6y-right { right: 0; border-right: none; }
+/* Penalty spots */
+.mv-pitch-pen-spot {
+  position: absolute; top: 50%; width: 5px; height: 5px;
+  background: rgba(255, 255, 255, 0.55); border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.mv-ps-left { left: 12%; }
+.mv-ps-right { left: 88%; }
+/* Penalty arcs — clipped circles outside the penalty box */
+.mv-pitch-arc {
+  position: absolute; width: 12%; aspect-ratio: 1;
+  border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 50%;
+  top: 50%; transform: translateY(-50%);
+}
+.mv-arc-left { left: 14%; clip-path: inset(28% 0 28% 50%); }
+.mv-arc-right { right: 14%; clip-path: inset(28% 50% 28% 0); }
+
+/* ── Ball ───────────────────────────────────────────────── */
+.mv-ball {
+  position: absolute; width: 10px; height: 10px;
+  background: radial-gradient(circle at 35% 35%, #fff, #ccc);
+  border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.3);
+  transform: translate(-50%, -50%); z-index: 10;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: left 0.12s linear, top 0.12s linear;
+}
+
+/* ── Players ────────────────────────────────────────────── */
+.mv-player {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 900; color: #fff;
+  cursor: default; z-index: 5;
+  transition: left 0.12s linear, top 0.12s linear;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.mv-player.home {
+  background: radial-gradient(circle at 40% 30%, #e8c44a, #9b7425);
+  border: 2px solid rgba(232, 196, 74, 0.7);
+}
+.mv-player.away {
+  background: radial-gradient(circle at 40% 30%, #5fa8ea, #2a5580);
+  border: 2px solid rgba(95, 168, 234, 0.7);
+}
+.mv-player.gk {
+  background: radial-gradient(circle at 40% 30%, #e8844a, #8f4b22) !important;
+  border-color: rgba(232, 132, 74, 0.7) !important;
+}
+.mv-player-num {
+  font-size: 10px; font-weight: 900; line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.mv-player-name {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  font-size: 7px; font-weight: 700; color: #fff; white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); margin-top: 1px;
+  pointer-events: none; letter-spacing: 0.2px;
+}
+
+/* ── Pitch flash effects ────────────────────────────────── */
+.mv-flash-goal::after {
+  content: ''; position: absolute; inset: 0; z-index: 20;
+  background: radial-gradient(circle, rgba(240, 200, 100, 0.3), transparent 70%);
+  animation: mv-flash 1.2s ease-out forwards; pointer-events: none;
+}
+.mv-flash-red::after {
+  content: ''; position: absolute; inset: 0; z-index: 20;
+  background: radial-gradient(circle, rgba(220, 50, 50, 0.25), transparent 70%);
+  animation: mv-flash 1s ease-out forwards; pointer-events: none;
+}
+@keyframes mv-flash {
+  0% { opacity: 1; } 100% { opacity: 0; }
+}
+
+/* ── Mini Stats Bar ─────────────────────────────────────── */
+.mv-stats-bar {
+  flex-shrink: 0; display: flex; gap: 4px; justify-content: center;
+  padding: 6px 8px;
+  background: rgba(10, 14, 22, 0.9); border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.mv-stat {
+  display: flex; align-items: center; gap: 6px; padding: 0 10px;
+}
+.mv-stat + .mv-stat { border-left: 1px solid var(--border); }
+.mv-stat-lbl {
+  font-size: 8px; font-weight: 700; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase; min-width: 50px; text-align: center;
+}
+.mv-stat-val {
+  font-size: 12px; font-weight: 800; min-width: 28px; text-align: center;
+}
+.mv-stat-h { color: #e8c44a; }
+.mv-stat-a { color: #5fa8ea; }
+
+/* ── Event Log Panel ────────────────────────────────────── */
+.mv-log-panel {
+  display: flex; flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: linear-gradient(180deg, #0b0f18, #080b12);
+  overflow: hidden;
+}
+.mv-log-head {
+  flex-shrink: 0; padding: 10px 14px;
+  font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold-light);
+  background: linear-gradient(180deg, #0f1520, #0c1018);
+  border-bottom: 1px solid var(--border);
+}
+.mv-log-list {
+  flex: 1; overflow-y: auto; padding: 6px 0;
+}
+.mv-log-entry {
+  display: flex; align-items: flex-start; gap: 6px;
+  padding: 6px 12px; font-size: 11px; line-height: 1.4;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  animation: mv-log-slide 0.3s ease-out;
+}
+@keyframes mv-log-slide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mv-log-min {
+  flex-shrink: 0; min-width: 28px; font-weight: 800;
+  color: var(--muted); font-size: 10px; padding-top: 1px;
+}
+.mv-log-icon { flex-shrink: 0; font-size: 12px; }
+.mv-log-text { color: var(--text); flex: 1; }
+.mv-log-text strong { color: var(--gold-light); }
+.mv-log-score {
+  display: inline-block; background: rgba(240, 200, 100, 0.15);
+  border: 1px solid rgba(240, 200, 100, 0.3); border-radius: 3px;
+  padding: 0 6px; font-weight: 900; color: var(--gold-light);
+  font-size: 11px; margin-left: 4px;
+}
+
+/* Log entry type styles */
+.mv-log-goal {
+  background: rgba(240, 200, 100, 0.08) !important;
+  border-left: 3px solid var(--gold);
+  padding-left: 9px;
+}
+.mv-log-red {
+  background: rgba(220, 50, 50, 0.08) !important;
+  border-left: 3px solid var(--red);
+  padding-left: 9px;
+}
+.mv-log-card {
+  background: rgba(240, 200, 50, 0.04);
+}
+.mv-log-penalty {
+  background: rgba(200, 100, 50, 0.06);
+  border-left: 3px solid #e8844a;
+  padding-left: 9px;
+}
+.mv-log-half, .mv-log-full {
+  background: rgba(90, 170, 94, 0.06) !important;
+  border-left: 3px solid var(--green);
+  padding-left: 9px;
+  font-weight: 700;
+}
+.mv-log-kickoff {
+  background: rgba(90, 170, 94, 0.04);
+}
+.mv-log-sub {
+  background: rgba(100, 150, 220, 0.04);
+}
+
+/* ── Controls Bar ───────────────────────────────────────── */
+.mv-controls {
+  flex-shrink: 0; display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; height: 46px;
+  background: linear-gradient(180deg, #0d1018, #090c14);
+  border-top: 1px solid var(--border);
+}
+.mv-ctrl-btn {
+  background: rgba(200, 160, 82, 0.08);
+  border: 1px solid rgba(200, 160, 82, 0.3);
+  color: var(--gold-light); font-size: 12px; font-weight: 800;
+  padding: 5px 14px; border-radius: 3px; cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.5px;
+}
+.mv-ctrl-btn:hover { background: rgba(200, 160, 82, 0.15); border-color: rgba(200, 160, 82, 0.5); }
+.mv-ctrl-btn.active {
+  background: rgba(200, 160, 82, 0.2);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  box-shadow: 0 0 8px rgba(200, 160, 82, 0.2);
+}
+.mv-progress-wrap {
+  flex: 1; display: flex; align-items: center; gap: 10px; margin-left: 8px;
+}
+.mv-progress-bar {
+  flex: 1; height: 6px; background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px; overflow: hidden;
+}
+.mv-progress-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+  transition: width 0.3s ease;
+}
+.mv-progress-lbl {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: 0.5px; min-width: 55px; text-align: right;
+}
+
+/* ── Match Summary Overlay ──────────────────────────────── */
+.mv-summary-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(5, 7, 12, 0.85);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  animation: mv-fade-in 0.4s ease-out;
+}
+.mv-summary-card {
+  background: linear-gradient(180deg, #111825, #0a0e18);
+  border: 1px solid rgba(200, 160, 82, 0.5); border-radius: 12px;
+  padding: 28px 36px; text-align: center; min-width: 400px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(200, 160, 82, 0.12);
+  animation: mv-card-enter 0.5s ease-out;
+}
+@keyframes mv-card-enter {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.mv-summary-title {
+  font-size: 12px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 16px;
+}
+.mv-summary-score {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  margin-bottom: 8px;
+}
+.mv-summary-team {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; color: var(--text);
+}
+.mv-summary-result {
+  font-size: 40px; font-weight: 900; color: var(--gold-light);
+  letter-spacing: 4px; text-shadow: 0 0 30px rgba(240, 200, 112, 0.3);
+}
+.mv-summary-winner {
+  font-size: 18px; font-weight: 900; color: var(--gold);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin: 12px 0 16px;
+}
+.mv-summary-bet {
+  font-size: 16px; font-weight: 900; letter-spacing: 1px;
+  margin-bottom: 16px; padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+.mv-summary-actions { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+.mv-summary-btn {
+  padding: 10px 24px; border-radius: 4px; cursor: pointer;
+  font-size: 12px; font-weight: 900; letter-spacing: 1.5px;
+  transition: all 0.15s;
+}
+.mv-summary-close-btn {
+  background: linear-gradient(180deg, #2a5a2a, #1a3a1a);
+  border: 1px solid rgba(90, 170, 94, 0.5); color: var(--green);
+}
+.mv-summary-close-btn:hover { background: linear-gradient(180deg, #3a6a3a, #2a4a2a); }
+.mv-summary-log-btn {
+  background: linear-gradient(180deg, #1a2540, #121a30);
+  border: 1px solid rgba(200, 160, 82, 0.3); color: var(--gold-light);
+}
+.mv-summary-log-btn:hover { background: linear-gradient(180deg, #2a3550, #1a2540); }
+
+/* ── Watch Match Button (on match cards) ────────────────── */
+.mc-watch-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(180deg, #1a3a1a, #0f2a0f);
+  border: 1px solid rgba(90, 170, 94, 0.4);
+  color: var(--green); font-size: 9px; font-weight: 900;
+  letter-spacing: 1px; padding: 4px 10px;
+  border-radius: 2px; cursor: pointer; transition: all 0.15s;
+  text-transform: uppercase;
+}
+.mc-watch-btn:hover {
+  background: linear-gradient(180deg, #2a5a2a, #1a3a1a);
+  border-color: rgba(90, 170, 94, 0.7);
+  box-shadow: 0 0 10px rgba(90, 170, 94, 0.2);
+}

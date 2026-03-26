@@ -1,0 +1,478 @@
+/* ── GAME FEEL ANIMATIONS ── */
+@keyframes ripple{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:.55}
+  100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}
+}
+@keyframes pulse-gold{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,160,82,0)}
+  50%{box-shadow:0 0 0 8px rgba(200,160,82,.25)}
+}
+@keyframes pulse-green{
+  0%,100%{box-shadow:0 0 0 0 rgba(90,170,94,0)}
+  50%{box-shadow:0 0 0 12px rgba(90,170,94,.25)}
+}
+@keyframes pulse-red{
+  0%,100%{box-shadow:0 0 0 0 rgba(201,68,68,0)}
+  50%{box-shadow:0 0 0 10px rgba(201,68,68,.2)}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-6px)}
+  30%{transform:translateX(5px)}
+  45%{transform:translateX(-4px)}
+  60%{transform:translateX(3px)}
+  75%{transform:translateX(-2px)}
+}
+@keyframes coin-pop{
+  0%{transform:scale(1);filter:brightness(1)}
+  35%{transform:scale(1.35);filter:brightness(1.6)}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+@keyframes glow-in{
+  0%{box-shadow:0 0 0 0 rgba(200,160,82,0);transform:scale(1)}
+  50%{box-shadow:0 0 18px 4px rgba(200,160,82,.4);transform:scale(1.04)}
+  100%{box-shadow:0 0 0 0 rgba(200,160,82,0);transform:scale(1)}
+}
+@keyframes flash-green{
+  0%{background:rgba(90,170,94,.5)}
+  100%{background:transparent}
+}
+/* Compare overlay animations */
+@keyframes cmp-card-enter{
+  0%{transform:scale(.85) translateY(20px);opacity:0}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+@keyframes cmp-slide-left{
+  0%{transform:translateX(-80px) scale(.6);opacity:0}
+  100%{transform:translateX(0) scale(1);opacity:1}
+}
+@keyframes cmp-slide-right{
+  0%{transform:translateX(80px) scale(.6);opacity:0}
+  100%{transform:translateX(0) scale(1);opacity:1}
+}
+@keyframes cmp-vs-slam{
+  0%{transform:scale(3);opacity:0;filter:blur(8px)}
+  60%{transform:scale(.9);opacity:1;filter:blur(0)}
+  80%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
+@keyframes cmp-hint-in{
+  0%{transform:translateX(-50%) translateY(10px);opacity:0}
+  100%{transform:translateX(-50%) translateY(0);opacity:1}
+}
+@keyframes flash-red{
+  0%{background:rgba(201,68,68,.4)}
+  100%{background:transparent}
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(0) rotate(0deg);opacity:1}
+  100%{transform:translateY(120px) rotate(720deg);opacity:0}
+}
+@keyframes tier-burst{
+  0%{transform:scale(0.5);opacity:0;filter:brightness(2)}
+  40%{transform:scale(1.3);opacity:1;filter:brightness(1.8)}
+  100%{transform:scale(1);opacity:1;filter:brightness(1)}
+}
+@keyframes slide-up-in{
+  0%{transform:translateY(12px);opacity:0}
+  100%{transform:translateY(0);opacity:1}
+}
+@keyframes odds-flash{
+  0%{color:var(--gold-light);text-shadow:0 0 12px rgba(240,200,112,.8)}
+  100%{color:var(--gold-light);text-shadow:none}
+}
+@keyframes stamp{
+  0%{transform:scale(2.2);opacity:0}
+  50%{transform:scale(.92);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+.anim-ripple{position:absolute;width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,160,82,.45),transparent 70%);
+  pointer-events:none;z-index:999;animation:ripple .5s ease-out forwards}
+.anim-pulse-gold{animation:pulse-gold .6s ease}
+.anim-pulse-green{animation:pulse-green .8s ease}
+.anim-pulse-red{animation:pulse-red .6s ease}
+.anim-shake{animation:shake .4s ease}
+.anim-coin-pop{animation:coin-pop .4s ease}
+.anim-glow{animation:glow-in .5s ease}
+.anim-flash-green{animation:flash-green .6s ease forwards}
+.anim-flash-red{animation:flash-red .5s ease forwards}
+.anim-tier-burst{animation:tier-burst .6s cubic-bezier(.17,.67,.35,1.2)}
+.anim-slide-up{animation:slide-up-in .3s ease-out}
+.anim-odds-flash{animation:odds-flash .5s ease}
+.anim-stamp{animation:stamp .4s cubic-bezier(.17,.67,.35,1.2)}
+.confetti-piece{position:fixed;width:8px;height:8px;pointer-events:none;z-index:10000;
+  border-radius:1px;animation:confetti-fall 1.2s ease-in forwards}
+/* bet option hover lift */
+.bopt{transition:all .15s,transform .12s}
+.bopt:hover{transform:translateY(-2px)}
+.bopt:active{transform:translateY(0) scale(.96);transition:transform .06s}
+.bopt.sel{transform:translateY(-1px)}
+/* button press feedback */
+.btn-g:active,.btn-r:active,.btn-back:active,.btn-bet:active,.bkt-open-btn:active,
+.hud-nav:active,.lock-pred-btn:active{transform:scale(.93);transition:transform .06s}
+/* match card click feel */
+.mc-clickable:active{transform:scale(.985);transition:transform .06s}
+/* tab switch */
+.bet-tab:active,.lineup-tab:active{transform:scale(.94);transition:transform .05s}
+/* toast entrance */
+#toast.on{animation:slide-up-in .25s ease-out}
+/* tier dot animation */
+.tier-dot.cur{animation:pulse-gold 1.5s infinite}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* REWARD SYSTEM                                               */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* ── Tier grid upgrade ── */
+.tier-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.tier-cell{position:relative;background:rgba(0,0,0,.4);border:1px solid rgba(200,160,82,.08);
+  border-radius:3px;padding:5px 3px 4px;text-align:center;cursor:pointer;
+  transition:all .2s;overflow:hidden;min-height:52px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px}
+.tier-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)}
+.tier-cell:hover{transform:translateY(-1px);border-color:rgba(200,160,82,.3)}
+.tier-cell.locked{opacity:.45;cursor:default}
+.tier-cell.locked:hover{transform:none}
+.tier-cell.unlocked{border-color:rgba(200,160,82,.4);background:rgba(200,160,82,.06)}
+.tier-cell.unlocked:hover{background:rgba(200,160,82,.12);box-shadow:0 0 12px rgba(200,160,82,.15)}
+.tier-cell.claimed{border-color:rgba(90,170,94,.3);background:rgba(90,170,94,.06)}
+.tier-cell.current{border-color:var(--gold);box-shadow:0 0 10px rgba(200,160,82,.3);
+  animation:pulse-gold 1.5s infinite}
+.tier-cell.milestone{border-width:2px}
+.tier-cell .tc-num{font-size:7px;color:var(--muted);font-weight:700;letter-spacing:.5px}
+.tier-cell .tc-icon{font-size:16px;line-height:1;margin:1px 0}
+.tier-cell .tc-rarity{width:80%;height:2px;border-radius:1px;margin-top:1px}
+.tier-cell .tc-claim{position:absolute;inset:0;background:rgba(200,160,82,.15);
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;
+  font-size:8px;font-weight:900;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase}
+.tier-cell.unlocked:hover .tc-claim{opacity:1}
+.tier-cell .tc-check{position:absolute;top:2px;right:3px;font-size:8px;color:var(--green)}
+
+/* ── Reward overlay ── */
+#reward-overlay{position:fixed;inset:0;z-index:10000;display:none;
+  align-items:center;justify-content:center;background:rgba(0,0,0,.82);
+  backdrop-filter:blur(6px)}
+#reward-overlay.open{display:flex}
+
+.reward-card{width:320px;max-width:90vw;perspective:800px}
+.reward-card-inner{position:relative;width:100%;transition:transform .7s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d}
+.reward-card-inner.flipped{transform:rotateY(180deg)}
+
+.reward-front,.reward-back{backface-visibility:hidden;border-radius:8px;
+  border:2px solid var(--border-hi);overflow:hidden}
+.reward-front{background:linear-gradient(145deg,#12182a,#0a0e18);padding:40px 20px;
+  text-align:center;position:relative}
+.reward-front::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(200,160,82,.02) 10px,rgba(200,160,82,.02) 20px)}
+.reward-front .rf-tier{font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:12px;font-weight:900}
+.reward-front .rf-q{font-size:44px;line-height:1;margin-bottom:8px;opacity:.85;
+  animation:reward-pulse 1.5s ease infinite}
+.reward-front .rf-hint{font-size:10px;color:var(--muted);letter-spacing:1px}
+
+.reward-back{position:absolute;top:0;left:0;right:0;transform:rotateY(180deg);
+  text-align:center;padding:24px 20px}
+.reward-back .rb-rarity{font-size:9px;font-weight:900;letter-spacing:2.5px;
+  text-transform:uppercase;margin-bottom:4px}
+.reward-back .rb-icon{font-size:56px;line-height:1;margin:10px 0 8px;
+  filter:drop-shadow(0 0 16px var(--rw-glow))}
+.reward-back .rb-name{font-size:16px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:3px}
+.reward-back .rb-type{font-size:9px;color:var(--muted);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:10px}
+.reward-back .rb-desc{font-size:11px;color:rgba(200,200,200,.7);line-height:1.5;
+  margin-bottom:14px;font-style:italic}
+.reward-back .rb-chips{font-size:13px;font-weight:900;color:var(--gold-light);
+  margin-bottom:10px}
+.reward-back .rb-collect{background:linear-gradient(180deg,#d4a843,#a87c28);color:#1a0f00;
+  border:1px solid #c8943a;padding:8px 28px;border-radius:3px;cursor:pointer;
+  font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  transition:all .15s;display:inline-block}
+.reward-back .rb-collect:hover{filter:brightness(1.15);transform:scale(1.03)}
+.reward-back .rb-collect:active{transform:scale(.96)}
+.reward-back .rb-already{font-size:10px;color:var(--green);font-weight:700;
+  padding:6px 0;letter-spacing:1px}
+
+@keyframes reward-pulse{
+  0%,100%{transform:scale(1);opacity:.85}
+  50%{transform:scale(1.06);opacity:1}
+}
+@keyframes reward-shine{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+@keyframes reward-glow-ring{
+  0%{box-shadow:0 0 0 0 var(--rw-glow)}
+  50%{box-shadow:0 0 30px 8px var(--rw-glow)}
+  100%{box-shadow:0 0 0 0 var(--rw-glow)}
+}
+.reward-shine-bar{position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);
+  background-size:200% 100%;animation:reward-shine 2.5s linear infinite;pointer-events:none}
+
+/* ── Inventory section ── */
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:6px}
+.inv-item{background:rgba(0,0,0,.3);border:1px solid rgba(200,160,82,.08);
+  border-radius:2px;padding:4px 2px;text-align:center;font-size:14px;
+  position:relative;cursor:default;transition:all .15s}
+.inv-item:hover{border-color:rgba(200,160,82,.25);background:rgba(200,160,82,.04)}
+.inv-item .inv-name{font-size:6px;color:var(--muted);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;margin-top:1px;line-height:1}
+.inv-empty{font-size:9px;color:var(--muted);text-align:center;padding:8px 0}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* MATCH CARD — Settled state + animations                     */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* Winner/loser team highlighting */
+.mc-team-winner .tname{color:#5aaa5e;text-shadow:0 0 8px rgba(90,170,94,.3);font-weight:900}
+.mc-team-winner .flag{filter:drop-shadow(0 0 4px rgba(90,170,94,.4))}
+.mc-team-loser .tname{color:var(--muted);opacity:.6}
+.mc-team-loser .flag{opacity:.55;filter:grayscale(.4)}
+
+/* Settled card left accent */
+.mc.mc-settled{border-left:3px solid rgba(90,170,94,.4)}
+.mc.mc-settled-draw{border-left:3px solid rgba(200,160,82,.3)}
+
+/* Winner banner inside card */
+.mc-result-banner{font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+  padding:3px 8px;text-align:center}
+.mc-win-banner{background:linear-gradient(90deg,rgba(90,170,94,.15),rgba(90,170,94,.05));
+  color:#5aaa5e;border-bottom:1px solid rgba(90,170,94,.15)}
+.mc-draw-banner{background:linear-gradient(90deg,rgba(200,160,82,.1),rgba(200,160,82,.04));
+  color:var(--gold);border-bottom:1px solid rgba(200,160,82,.1)}
+
+/* Bet status badges on cards */
+.mc-bet-won{background:rgba(90,170,94,.08);animation:pulse-green .8s ease}
+.mc-bet-lost{background:rgba(201,68,68,.06)}
+
+/* ── Just-settled animation (staggered on cards) ── */
+.mc-just-settled{animation:mc-settle-in .6s cubic-bezier(.17,.67,.35,1.2)}
+.mc-winner-flash{box-shadow:0 0 20px rgba(90,170,94,.35);border-color:rgba(90,170,94,.5) !important;
+  transition:box-shadow .8s ease, border-color .8s ease}
+.mc-draw-flash{box-shadow:0 0 15px rgba(200,160,82,.25);border-color:rgba(200,160,82,.4) !important;
+  transition:box-shadow .8s ease, border-color .8s ease}
+.mc-score-stamp{animation:mc-score-slam .5s cubic-bezier(.17,.67,.35,1.3)}
+
+@keyframes mc-settle-in{
+  0%{transform:scale(.92);opacity:.3;filter:brightness(1.8)}
+  50%{transform:scale(1.03);opacity:1;filter:brightness(1.2)}
+  100%{transform:scale(1);opacity:1;filter:brightness(1)}
+}
+@keyframes mc-score-slam{
+  0%{transform:scale(2.5);opacity:0;filter:blur(4px)}
+  40%{transform:scale(.9);opacity:1;filter:blur(0)}
+  60%{transform:scale(1.15);opacity:1}
+  100%{transform:scale(1);opacity:1}
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* RESULT OVERLAY — Dramatic win/loss feedback                 */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* ── Overlay container ── */
+.ro-overlay{position:fixed;inset:0;z-index:9500;display:none;
+  align-items:center;justify-content:center;animation:ro-fade-in .3s ease}
+.ro-overlay.ro-closing{animation:ro-fade-out .3s ease forwards}
+.ro-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px)}
+
+@keyframes ro-fade-in{0%{opacity:0}100%{opacity:1}}
+@keyframes ro-fade-out{0%{opacity:1}100%{opacity:0}}
+
+/* ── Card ── */
+.ro-card{position:relative;width:480px;max-width:94vw;border-radius:12px;
+  overflow:hidden;text-align:center;padding:28px 20px 20px;
+  animation:ro-card-enter .5s cubic-bezier(.17,.67,.35,1.15) forwards;z-index:1}
+.ro-closing .ro-card{animation:ro-card-exit .25s ease forwards}
+
+@keyframes ro-card-enter{
+  0%{transform:scale(.7) translateY(30px);opacity:0}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+@keyframes ro-card-exit{
+  0%{transform:scale(1);opacity:1}
+  100%{transform:scale(.9) translateY(-20px);opacity:0}
+}
+
+/* Shine sweep on card */
+.ro-shine{position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.04) 50%,transparent 60%);
+  background-size:200% 100%;animation:ro-shine-sweep 3s .5s linear infinite;pointer-events:none}
+@keyframes ro-shine-sweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── Neutral theme (no bets) ── */
+.ro-neutral .ro-card{
+  background:linear-gradient(170deg,#0d1218,#0a0e16,#081018);
+  border:2px solid rgba(200,160,82,.3);
+  box-shadow:0 0 40px rgba(200,160,82,.08)}
+.ro-neutral .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(circle at 50% 60%,rgba(200,160,82,.06),transparent 60%);
+  pointer-events:none;animation:ro-glow-pulse 2.5s ease infinite}
+.ro-neutral .ro-headline{color:var(--gold-light);text-shadow:0 0 15px rgba(200,160,82,.3)}
+
+/* ── Victory theme ── */
+.ro-victory .ro-card{
+  background:linear-gradient(170deg,#0d1a0d,#0a1410,#081018);
+  border:2px solid rgba(90,170,94,.5);
+  box-shadow:0 0 60px rgba(90,170,94,.15),0 0 120px rgba(90,170,94,.05)}
+.ro-victory .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(circle at 50% 60%,rgba(90,170,94,.1),transparent 55%);
+  pointer-events:none;animation:ro-glow-pulse 2s ease infinite}
+
+/* ── Jackpot theme ── */
+.ro-jackpot .ro-card{
+  background:linear-gradient(170deg,#1a1500,#141008,#0a0e18);
+  border:2px solid rgba(240,200,112,.6);
+  box-shadow:0 0 80px rgba(240,200,112,.2),0 0 160px rgba(240,200,112,.08)}
+.ro-jackpot .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(circle at 50% 60%,rgba(240,200,112,.15),transparent 50%);
+  pointer-events:none;animation:ro-glow-pulse 1.5s ease infinite}
+.ro-jackpot .ro-headline{color:var(--gold-light);text-shadow:0 0 30px rgba(240,200,112,.6)}
+.ro-jackpot .ro-chips-num{color:var(--gold-light);text-shadow:0 0 20px rgba(240,200,112,.5)}
+
+/* ── Defeat theme ── */
+.ro-defeat .ro-card{
+  background:linear-gradient(170deg,#1a0d0d,#140a0a,#0a0e18);
+  border:2px solid rgba(201,68,68,.35);
+  box-shadow:0 0 40px rgba(201,68,68,.1)}
+.ro-defeat .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:radial-gradient(circle at 50% 60%,rgba(201,68,68,.06),transparent 60%);
+  pointer-events:none}
+
+@keyframes ro-glow-pulse{
+  0%,100%{opacity:.5}
+  50%{opacity:1}
+}
+
+/* ── Headline ── */
+.ro-headline-icon{font-size:52px;line-height:1;margin-bottom:6px;
+  animation:ro-icon-slam .6s cubic-bezier(.17,.67,.35,1.3) forwards}
+.ro-headline{font-size:24px;font-weight:900;letter-spacing:5px;
+  text-transform:uppercase;margin-bottom:6px;
+  animation:ro-headline-in .5s .15s ease both}
+.ro-victory .ro-headline{color:#5aaa5e;text-shadow:0 0 20px rgba(90,170,94,.4)}
+.ro-defeat .ro-headline{color:var(--red);text-shadow:0 0 15px rgba(201,68,68,.3)}
+
+@keyframes ro-icon-slam{
+  0%{transform:scale(3.5) rotate(-12deg);opacity:0;filter:blur(6px)}
+  50%{transform:scale(.85) rotate(3deg);opacity:1;filter:blur(0)}
+  70%{transform:scale(1.1) rotate(-1deg)}
+  100%{transform:scale(1) rotate(0)}
+}
+@keyframes ro-headline-in{
+  0%{transform:translateY(10px);opacity:0;letter-spacing:14px}
+  100%{transform:translateY(0);opacity:1;letter-spacing:5px}
+}
+
+/* ── Chips display (win amount) ── */
+.ro-chips-display{display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:4px 0 10px;animation:ro-chips-in .6s .3s ease both}
+.ro-chips-icon{font-size:28px;animation:ro-coin-spin 1s .4s ease both}
+.ro-chips-num{font-size:38px;font-weight:900;font-variant-numeric:tabular-nums;
+  color:#5aaa5e;text-shadow:0 0 20px rgba(90,170,94,.4)}
+.ro-net-neg .ro-chips-num{color:var(--red);text-shadow:0 0 15px rgba(201,68,68,.3)}
+
+@keyframes ro-chips-in{
+  0%{transform:scale(.5) translateY(15px);opacity:0}
+  60%{transform:scale(1.1) translateY(-3px);opacity:1}
+  100%{transform:scale(1) translateY(0)}
+}
+@keyframes ro-coin-spin{
+  0%{transform:rotateY(0)}
+  100%{transform:rotateY(720deg)}
+}
+
+/* ── Match result rows (new layout) ── */
+.ro-results-scroll{display:flex;flex-direction:column;gap:5px;margin:10px 0 16px;
+  max-height:320px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+  padding:0 2px}
+
+.ro-match-row{opacity:0;animation:ro-row-in .45s ease forwards;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:6px;padding:8px 10px;transition:background .2s}
+.ro-match-row:hover{background:rgba(255,255,255,.06)}
+
+@keyframes ro-row-in{
+  0%{transform:translateY(12px) scale(.95);opacity:0}
+  100%{transform:translateY(0) scale(1);opacity:1}
+}
+
+.ro-match-teams{display:flex;align-items:center;justify-content:center;gap:6px}
+.ro-flag{flex-shrink:0;display:flex;align-items:center}
+.ro-flag-img{width:22px;height:16px;object-fit:cover;border-radius:2px;
+  box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.ro-tname{font-size:12px;font-weight:700;color:var(--text);min-width:60px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ro-tname:first-of-type{text-align:right}
+.ro-tname:last-of-type{text-align:left}
+.ro-tname.ro-winner{color:#5aaa5e;text-shadow:0 0 8px rgba(90,170,94,.3)}
+.ro-tname.ro-loser{color:var(--muted);opacity:.6}
+
+.ro-score-box{font-size:16px;font-weight:900;color:var(--gold-light);
+  min-width:44px;text-align:center;letter-spacing:2px;
+  text-shadow:0 0 10px rgba(240,200,112,.3)}
+
+.ro-match-meta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.ro-winner-tag{font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  color:#5aaa5e;background:rgba(90,170,94,.12);padding:2px 8px;border-radius:2px;
+  border:1px solid rgba(90,170,94,.2)}
+.ro-draw-tag{font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold);background:rgba(200,160,82,.1);padding:2px 8px;border-radius:2px;
+  border:1px solid rgba(200,160,82,.15)}
+
+.ro-bet-badge{font-size:9px;font-weight:900;padding:2px 8px;border-radius:2px;letter-spacing:.5px}
+.ro-bet-won{color:#5aaa5e;background:rgba(90,170,94,.15);border:1px solid rgba(90,170,94,.3);
+  animation:ro-bet-glow 1s .5s ease both}
+.ro-bet-lost{color:var(--red);background:rgba(201,68,68,.1);border:1px solid rgba(201,68,68,.2)}
+.ro-bet-push{color:var(--gold);background:rgba(200,160,82,.1);border:1px solid rgba(200,160,82,.2)}
+
+@keyframes ro-bet-glow{
+  0%,100%{box-shadow:none}
+  50%{box-shadow:0 0 12px rgba(90,170,94,.4)}
+}
+
+/* ── Dismiss button ── */
+.ro-dismiss{background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.2);
+  color:var(--text);padding:10px 40px;border-radius:4px;cursor:pointer;
+  font-size:12px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;
+  transition:all .15s;opacity:0;animation:ro-btn-in .3s .8s ease forwards}
+.ro-dismiss:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);
+  transform:scale(1.04);box-shadow:0 0 20px rgba(255,255,255,.08)}
+.ro-dismiss:active{transform:scale(.96)}
+
+@keyframes ro-btn-in{
+  0%{opacity:0;transform:translateY(8px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+
+/* ── Floating payout numbers (on match cards) ── */
+.floating-payout{position:fixed;pointer-events:none;z-index:9999;
+  font-size:22px;font-weight:900;white-space:nowrap;
+  animation:float-up 2s ease-out forwards}
+.floating-payout.fp-win{color:#5aaa5e;
+  text-shadow:0 0 14px rgba(90,170,94,.6),0 0 30px rgba(90,170,94,.3),0 2px 8px rgba(0,0,0,.7)}
+.floating-payout.fp-loss{color:var(--red);
+  text-shadow:0 0 10px rgba(201,68,68,.5),0 2px 8px rgba(0,0,0,.6)}
+
+@keyframes float-up{
+  0%{transform:translateY(0) scale(.5);opacity:0}
+  12%{transform:translateY(-8px) scale(1.4);opacity:1}
+  25%{transform:translateY(-18px) scale(1);opacity:1}
+  100%{transform:translateY(-90px) scale(.7);opacity:0}
+}
+
+/* ── Screen flash effects ── */
+@keyframes screen-flash-green{
+  0%{opacity:.35}100%{opacity:0}
+}
+@keyframes screen-flash-gold{
+  0%{opacity:.3}100%{opacity:0}
+}
+.screen-flash{position:fixed;inset:0;pointer-events:none;z-index:9000}
+.screen-flash-green{background:radial-gradient(circle at 50% 50%,rgba(90,170,94,.5),transparent 70%);
+  animation:screen-flash-green .7s ease forwards}
+.screen-flash-gold{background:radial-gradient(circle at 50% 50%,rgba(240,200,112,.45),transparent 70%);
+  animation:screen-flash-gold .8s ease forwards}

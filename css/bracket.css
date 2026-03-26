@@ -1,0 +1,33 @@
+/* ── BRACKET OVERLAY ────────────────────────────────────── */
+#bracket-overlay{position:fixed;inset:0;z-index:600;background:#05080f;overflow:auto;display:none;flex-direction:column}
+#bracket-overlay.open{display:flex}
+.bkt-topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:#08101e;border-bottom:1px solid rgba(200,160,82,.3)}
+.bkt-topbar-l{display:flex;align-items:center;gap:12px}
+.bkt-logo{font-size:14px;font-weight:900;color:var(--gold);letter-spacing:2px}
+.bkt-tlbl{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted)}
+.bkt-close-btn{background:none;border:1px solid rgba(200,160,82,.4);color:var(--gold-light);font-size:9px;font-weight:700;padding:4px 14px;border-radius:3px;cursor:pointer;letter-spacing:1px;text-transform:uppercase}
+.bkt-close-btn:hover{background:rgba(200,160,82,.12)}
+.bkt-body{flex:1;position:relative;overflow:auto;padding:28px 12px 16px;min-height:560px}
+.bkt-body-inner{display:inline-flex;align-items:stretch;min-height:calc(100% - 44px)}
+.bkt-half{display:flex;flex-direction:row;align-items:stretch}
+.bkt-half.right{flex-direction:row-reverse}
+.bkt-round{display:flex;flex-direction:column;width:130px;flex-shrink:0;padding:0 4px;position:relative}
+.bkt-round-hdr{font-size:7px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:6px;flex-shrink:0}
+.bkt-slot{flex:1;display:flex;align-items:center;padding:2px 0}
+.bkt-match-card{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(200,160,82,.22);border-radius:4px;overflow:hidden;cursor:pointer;transition:border-color .15s,background .15s}
+.bkt-match-card:hover{border-color:rgba(200,160,82,.7);background:rgba(200,160,82,.1)}
+.bkt-match-card.tbd{opacity:.38;cursor:default;pointer-events:none}
+.bkt-match-card.final-card{border-color:rgba(200,160,82,.55);background:rgba(200,160,82,.1);box-shadow:0 0 18px rgba(200,160,82,.15)}
+.bkt-team-row{display:flex;align-items:center;gap:5px;padding:5px 7px;font-size:10px;font-weight:700}
+.bkt-team-row+.bkt-team-row{border-top:1px solid rgba(255,255,255,.07)}
+.bkt-team-row.winner{background:rgba(200,160,82,.18);color:var(--gold-light)}
+.bkt-team-row.loser{opacity:.4}
+.bkt-tname{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
+.bkt-sc{font-size:12px;font-weight:900;color:var(--gold-light);min-width:13px;text-align:right;flex-shrink:0}
+.bkt-center{width:168px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px;text-align:center}
+.bkt-trophy-icon{font-size:50px;line-height:1;filter:drop-shadow(0 0 18px rgba(200,160,82,.7))}
+.bkt-champ-lbl{font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-top:2px}
+.bkt-champ-name{font-size:13px;font-weight:900;color:var(--gold-light)}
+#bkt-svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+.bkt-open-btn{font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 10px;background:rgba(200,160,82,.1);border:1px solid rgba(200,160,82,.35);color:var(--gold-light);border-radius:3px;cursor:pointer;text-transform:uppercase}
+.bkt-open-btn:hover{background:rgba(200,160,82,.22)}

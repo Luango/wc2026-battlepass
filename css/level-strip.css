@@ -1,0 +1,419 @@
+/* ═══════════════════════════════════════════════════════════
+   LEVEL REWARD STRIP + XP BAR — Dota 2 Battle Pass style
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Bottom section container ── */
+.level-bottom-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(0deg, #050709, #0a0e18);
+  border-top: 1px solid var(--border-hi);
+  position: relative;
+}
+.level-bottom-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   XP BAR — Super prominent with VFX
+   ═══════════════════════════════════════════════════════════ */
+
+.level-xp-wrap {
+  position: relative;
+  padding: 8px 20px;
+  overflow: hidden;
+}
+
+.level-xp-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 40% 100% at 30% 50%, rgba(240,200,112,.0), transparent);
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+.level-xp-glow.xp-glow-active {
+  background: radial-gradient(ellipse 60% 200% at 30% 50%, rgba(240,200,112,.15), transparent);
+  animation: xp-glow-flash 1.2s ease-out;
+}
+
+.level-xp-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.level-xp-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.level-xp-label {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+}
+.level-xp-num {
+  color: var(--gold-light);
+  font-size: 14px;
+  text-shadow: 0 0 12px rgba(240,200,112,.4);
+}
+
+.level-xp-track {
+  flex: 1;
+  height: 14px;
+  background: rgba(0,0,0,.6);
+  border: 1px solid rgba(200,160,82,.25);
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
+}
+
+.level-xp-fill {
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #7a5c1e, #c8a052, #f0c870);
+  position: relative;
+  transition: width 0.6s cubic-bezier(.4,.2,.2,1);
+  box-shadow: 0 0 8px rgba(240,200,112,.3);
+}
+
+.level-xp-fill-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 40%, rgba(255,255,255,.2) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: xp-shine 3s linear infinite;
+  border-radius: 7px;
+}
+
+.level-xp-fill.xp-fill-flash {
+  animation: xp-fill-burst 0.8s ease-out;
+  box-shadow: 0 0 20px rgba(240,200,112,.6), 0 0 40px rgba(240,200,112,.3);
+}
+
+.level-xp-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+}
+
+.level-xp-sep {
+  color: var(--border-hi);
+  font-size: 14px;
+}
+
+.level-xp-tourney {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* XP bar pulse on gain */
+.level-xp-wrap.xp-bar-pulse .level-xp-track {
+  animation: xp-bar-glow 1s ease-out;
+}
+
+@keyframes xp-shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes xp-fill-burst {
+  0% { filter: brightness(1); }
+  30% { filter: brightness(2); box-shadow: 0 0 30px rgba(240,200,112,.8), 0 0 60px rgba(240,200,112,.4); }
+  100% { filter: brightness(1); box-shadow: 0 0 8px rgba(240,200,112,.3); }
+}
+
+@keyframes xp-bar-glow {
+  0% { box-shadow: inset 0 2px 4px rgba(0,0,0,.5); border-color: rgba(200,160,82,.25); }
+  30% { box-shadow: inset 0 2px 4px rgba(0,0,0,.5), 0 0 20px rgba(240,200,112,.4); border-color: var(--gold); }
+  100% { box-shadow: inset 0 2px 4px rgba(0,0,0,.5); border-color: rgba(200,160,82,.25); }
+}
+
+@keyframes xp-glow-flash {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Floating +XP text ── */
+.xp-float-text {
+  position: fixed;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--gold-light);
+  text-shadow: 0 0 12px rgba(240,200,112,.8), 0 0 24px rgba(240,200,112,.4), 0 2px 6px rgba(0,0,0,.8);
+  pointer-events: none;
+  z-index: 10000;
+  white-space: nowrap;
+  animation: xp-float-up 1.5s ease-out forwards;
+  letter-spacing: 1px;
+}
+
+@keyframes xp-float-up {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  15% { transform: translateY(-10px) scale(1.3); opacity: 1; }
+  30% { transform: translateY(-20px) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+}
+
+/* ── XP Particles ── */
+.xp-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  box-shadow: 0 0 6px var(--gold);
+  animation: xp-particle-fly 0.8s ease-out forwards;
+}
+
+@keyframes xp-particle-fly {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-30px) translateX(var(--dx, 10px)) scale(0); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LEVEL REWARD STRIP — Horizontal scrollable cards
+   ═══════════════════════════════════════════════════════════ */
+
+.level-strip-wrap {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #080b12 0%, #060810 100%);
+  border-top: 1px solid rgba(200,160,82,.1);
+}
+
+/* Fade edges */
+.level-strip-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+.level-strip-fade-l {
+  left: 0;
+  background: linear-gradient(90deg, #060810, transparent);
+}
+.level-strip-fade-r {
+  right: 0;
+  background: linear-gradient(270deg, #060810, transparent);
+}
+
+.level-strip {
+  display: flex;
+  gap: 10px;
+  padding: 12px 64px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.level-strip::-webkit-scrollbar { display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   LEVEL CARDS — Individual reward cards
+   ═══════════════════════════════════════════════════════════ */
+
+.level-card {
+  flex: 0 0 auto;
+  width: 110px;
+  min-height: 130px;
+  background: linear-gradient(165deg, #12182a, #0a0e18);
+  border: 1px solid rgba(200,160,82,.12);
+  border-radius: 8px;
+  padding: 8px 6px 10px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(.4,.2,.2,1);
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.level-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+}
+
+.level-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--card-color);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4), 0 0 15px var(--card-glow);
+}
+
+/* ── Card states ── */
+.level-card-locked {
+  opacity: 0.4;
+}
+.level-card-locked:hover {
+  transform: none;
+  opacity: 0.5;
+}
+
+.level-card-unlocked {
+  border-color: var(--card-color);
+  background: linear-gradient(165deg, #12182a, #0e1424);
+  box-shadow: 0 0 10px var(--card-glow);
+  animation: level-card-glow 2s ease-in-out infinite;
+}
+
+.level-card-claimed {
+  border-color: rgba(90,170,94,.3);
+  background: linear-gradient(165deg, #0d1a0d, #0a120e);
+}
+
+.level-card-current {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 20px rgba(240,200,112,.3), inset 0 0 10px rgba(240,200,112,.05) !important;
+  animation: level-card-current-pulse 2s ease-in-out infinite !important;
+}
+
+.level-card-milestone {
+  border-width: 2px;
+}
+.level-card-milestone .lc-top {
+  background: linear-gradient(90deg, transparent, rgba(240,200,112,.1), transparent);
+}
+
+@keyframes level-card-glow {
+  0%, 100% { box-shadow: 0 0 8px var(--card-glow); }
+  50% { box-shadow: 0 0 18px var(--card-glow); }
+}
+
+@keyframes level-card-current-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(240,200,112,.2), inset 0 0 8px rgba(240,200,112,.03); }
+  50% { box-shadow: 0 0 30px rgba(240,200,112,.4), inset 0 0 15px rgba(240,200,112,.08); }
+}
+
+/* ── Card inner elements ── */
+.lc-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.lc-level {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.level-card-current .lc-level {
+  color: var(--gold-light);
+}
+
+.lc-star {
+  font-size: 10px;
+  color: var(--gold-light);
+  text-shadow: 0 0 6px rgba(240,200,112,.5);
+}
+
+.lc-icon {
+  font-size: 28px;
+  line-height: 1;
+  margin: 4px 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.5));
+}
+.level-card-unlocked .lc-icon,
+.level-card-claimed .lc-icon {
+  filter: drop-shadow(0 0 8px var(--card-glow));
+}
+
+.lc-name {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lc-rarity {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.lc-chips {
+  font-size: 8px;
+  font-weight: 900;
+  color: var(--gold-light);
+  margin-top: 1px;
+}
+
+.lc-rarity-bar {
+  width: 60%;
+  height: 2px;
+  border-radius: 1px;
+  margin-top: auto;
+  opacity: 0.7;
+}
+
+.lc-check {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 10px;
+  color: var(--green);
+  text-shadow: 0 0 4px rgba(90,170,94,.5);
+}
+
+.lc-claim-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(200,160,82,.25), rgba(200,160,82,.12));
+  color: var(--gold-light);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-align: center;
+  padding: 3px 0;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.level-card-unlocked:hover .lc-claim-badge {
+  opacity: 1;
+}

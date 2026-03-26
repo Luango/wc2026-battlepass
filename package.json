@@ -1,0 +1,8 @@
+{
+  "name": "wc2026-battlepass",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1 -o /wc2026-battlepass.html"
+  }
+}

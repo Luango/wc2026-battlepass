@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Static File Server (Python)",
+      "name": "dev",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8080"],
+      "runtimeArgs": ["serve.py"],
       "port": 8080
     }
   ]
