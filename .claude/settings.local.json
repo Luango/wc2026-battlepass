@@ -19,7 +19,8 @@
       "Bash(node -c js/main.js)",
       "Bash(node -c js/state.js)",
       "Bash(grep -r \"formation\\\\|scorer\\\\|starting11\\\\|mvp\" js/*.js)",
-      "Bash(curl -s http://localhost:8080/wc2026-battlepass.html)"
+      "Bash(curl -s http://localhost:8080/wc2026-battlepass.html)",
+      "Bash(curl -s -I http://localhost:8080/wc2026-battlepass.html)"
     ]
   }
 }

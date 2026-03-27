@@ -453,7 +453,7 @@ function renderFloatingAIChat(mid) {
   if (!isOpen) {
     widget.className = 'ai-float-widget collapsed';
     widget.innerHTML = `<button class="ai-float-btn" onclick="toggleAIChat()">
-      <span class="ai-float-icon">🤖</span>
+      <img src="img/blubo.svg" alt="Blubo AI" class="ai-float-icon-img">
       <span class="ai-float-label">AI Analyst</span>
     </button>`;
     return;
@@ -463,7 +463,7 @@ function renderFloatingAIChat(mid) {
   widget.innerHTML = `
     <div class="ai-float-header">
       <div class="ai-float-title">
-        <span>🤖</span>
+        <img src="img/blubo.svg" alt="Blubo" class="ai-header-icon">
         <span>AI MATCH ANALYST</span>
       </div>
       <button class="ai-float-close" onclick="toggleAIChat()">✕</button>
@@ -484,12 +484,12 @@ function renderFloatingAIChat(mid) {
     ` : `
       <div class="ai-float-messages" id="ai-chat-messages">
         <div class="ai-chat-msg ai-bot">
-          <div class="ai-chat-avatar">🤖</div>
-          <div class="ai-chat-bubble">Hey! I'm your AI analyst. Ask me about predictions, tactics, value bets, or any player!</div>
+          <div class="ai-chat-avatar"><img src="img/blubo.svg" alt="Blubo" class="ai-avatar-img"></div>
+          <div class="ai-chat-bubble">Hey! I'm Blubo, your AI analyst. Ask me about predictions, tactics, value bets, or any player!</div>
         </div>
         ${chatMsgs.map(msg => `
           <div class="ai-chat-msg ${msg.from}">
-            <div class="ai-chat-avatar">${msg.from === 'ai-bot' ? '🤖' : '👤'}</div>
+            <div class="ai-chat-avatar">${msg.from === 'ai-bot' ? '<img src="img/blubo.svg" alt="Blubo" class="ai-avatar-img">' : '👤'}</div>
             <div class="ai-chat-bubble">${msg.text}</div>
           </div>
         `).join('')}
