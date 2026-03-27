@@ -20,7 +20,10 @@
       "Bash(node -c js/state.js)",
       "Bash(grep -r \"formation\\\\|scorer\\\\|starting11\\\\|mvp\" js/*.js)",
       "Bash(curl -s http://localhost:8080/wc2026-battlepass.html)",
-      "Bash(curl -s -I http://localhost:8080/wc2026-battlepass.html)"
+      "Bash(curl -s -I http://localhost:8080/wc2026-battlepass.html)",
+      "Bash(grep -n \"sp-center\\\\|simple-preview\\\\|preview-modal\" \"C:/Users/Ang Lu/ClaudeJam2/css/\"*)",
+      "Bash(gh auth:*)",
+      "Bash(command -v gh)"
     ]
   }
 }

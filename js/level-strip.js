@@ -65,9 +65,36 @@ const BASE_REWARDS = [
   { level:48, type:'apparel', name:'Infinity Scarf',            emoji:'♾️', rarity:'legendary', chips:0,    desc:'A scarf that never ends — infinite style' },
   { level:49, type:'chips',   name:'Emperor Vault',             emoji:'👸', rarity:'legendary', chips:5000, desc:'Five thousand coins — the emperors ransom' },
   { level:50, type:'prop',    name:'World Cup Replica',         emoji:'🏆', rarity:'legendary', chips:5000, desc:'A 1:1 golden replica of the FIFA World Cup', milestone:true },
+
+  // ── Season 2: Post-tournament prestige rewards ──
+  { level:51, type:'chips',   name:'Prestige Bankroll',         emoji:'💎', rarity:'rare',      chips:3000, desc:'Welcome to the prestige circuit' },
+  { level:52, type:'apparel', name:'Midnight Hoodie',            emoji:'🧥', rarity:'rare',      chips:0,    desc:'All-black limited edition streetwear' },
+  { level:53, type:'prop',    name:'Neon Scoreboard',            emoji:'📊', rarity:'rare',      chips:0,    desc:'A personal mini neon scoreboard for your desk' },
+  { level:54, type:'chips',   name:'Dark Horse Jackpot',         emoji:'🐴', rarity:'rare',      chips:3200, desc:'For the bold bettors who backed the underdog' },
+  { level:55, type:'special', name:'Golden Multiplier',          emoji:'✖️', rarity:'epic',      chips:2000, desc:'All chip rewards multiplied this season', milestone:true },
+  { level:56, type:'apparel', name:'Laser Visor',                emoji:'🥽', rarity:'epic',      chips:0,    desc:'See every match angle with this cyberpunk visor' },
+  { level:57, type:'prop',    name:'Trophy Cabinet',             emoji:'🗄️', rarity:'epic',      chips:0,    desc:'A miniature glass cabinet for all your collectibles' },
+  { level:58, type:'chips',   name:'Sovereign Vault',            emoji:'🏦', rarity:'epic',      chips:3500, desc:'A vault worthy of a sovereign bettor' },
+  { level:59, type:'apparel', name:'Plasma Tracksuit',           emoji:'🩱', rarity:'epic',      chips:0,    desc:'Electrifying neon plasma panels pulse with each goal' },
+  { level:60, type:'prop',    name:'Galactic Trophy',            emoji:'🌌', rarity:'legendary', chips:3000, desc:'A trophy that holds an entire galaxy inside', milestone:true },
+  { level:61, type:'chips',   name:'Star Trader Cache',          emoji:'⭐', rarity:'epic',      chips:4000, desc:'Trade like the stars — play like a champion' },
+  { level:62, type:'apparel', name:'Thunder Cleats',             emoji:'⚡', rarity:'epic',      chips:0,    desc:'Every step crackles with electric thunder' },
+  { level:63, type:'prop',    name:'War Room Monitor',           emoji:'🖥️', rarity:'epic',      chips:0,    desc:'A six-screen tactical war room setup — miniaturised' },
+  { level:64, type:'special', name:'Phantom XP',                 emoji:'👻', rarity:'epic',      chips:0,    desc:'Invisible XP bonus that stacks silently each match' },
+  { level:65, type:'chips',   name:'Titan Coffers',              emoji:'⚔️', rarity:'epic',      chips:4200, desc:'The ancient titan\'s war chest of gold', milestone:true },
+  { level:66, type:'apparel', name:'Void Cloak',                 emoji:'🌑', rarity:'legendary', chips:0,    desc:'A cloak woven from the fabric of empty space' },
+  { level:67, type:'prop',    name:'Hologram Pitch',             emoji:'🔵', rarity:'legendary', chips:0,    desc:'A miniature holographic pitch that plays your bets back' },
+  { level:68, type:'chips',   name:'Eclipse Hoard',              emoji:'🌘', rarity:'legendary', chips:4500, desc:'Coins collected during a total solar eclipse' },
+  { level:69, type:'apparel', name:'Nebula Jersey',              emoji:'🌠', rarity:'legendary', chips:0,    desc:'A jersey that swirls with nebula-born stardust' },
+  { level:70, type:'prop',    name:'Cosmic Orb',                 emoji:'🔮', rarity:'legendary', chips:4000, desc:'An orb that has predicted every World Cup winner since 1966', milestone:true },
+  { level:71, type:'chips',   name:'Supernova Purse',            emoji:'💥', rarity:'legendary', chips:5000, desc:'Born from a dying star — infinite value' },
+  { level:72, type:'apparel', name:'Infinity Crown',             emoji:'♾️', rarity:'legendary', chips:0,    desc:'The crown worn by the ultimate prediction champion' },
+  { level:73, type:'prop',    name:'Dimensional Badge',          emoji:'🪬', rarity:'legendary', chips:0,    desc:'A badge from a dimension where your team always wins' },
+  { level:74, type:'special', name:'Omniscience Boost',          emoji:'🧿', rarity:'legendary', chips:5000, desc:'For one match, you see all — every stat, every angle' },
+  { level:75, type:'prop',    name:'God-Tier Trophy',            emoji:'🏆', rarity:'legendary', chips:7500, desc:'Only 75 bettors in the world have ever reached this level', milestone:true },
 ];
 
-// ── Procedural generation for levels 51-100 ──
+// ── Procedural generation for levels 76-100 ──
 const PROC = [
   { type:'chips', names:['Coin Cache','Gold Reserve','Mega Stash','Fortune Pile','Diamond Vault'], emoji:['🪙','💰','💎','🏦','💵'] },
   { type:'prop',  names:['Platinum Ball','Elite Badge','Legend Crest','Star Medal','Infinity Orb'], emoji:['⚽','🏅','🛡️','⭐','🔮'] },
@@ -76,9 +103,9 @@ const PROC = [
 ];
 
 function getReward(lvl) {
-  if (lvl <= 50) return BASE_REWARDS[lvl - 1];
+  if (lvl <= 75) return BASE_REWARDS[lvl - 1];
   const isMilestone = lvl % 5 === 0;
-  const ci = Math.abs((lvl - 51) % 4), ni = Math.floor((lvl - 51) / 4) % 5;
+  const ci = Math.abs((lvl - 76) % 4), ni = Math.floor((lvl - 76) / 4) % 5;
   const t = PROC[ci];
   let rarity = lvl >= 95 ? 'legendary' : lvl >= 80 ? 'epic' : lvl >= 65 ? 'rare' : 'uncommon';
   if (isMilestone && rarity !== 'legendary') rarity = {common:'uncommon',uncommon:'rare',rare:'epic',epic:'legendary'}[rarity];
@@ -212,7 +239,8 @@ function showHoverPanel(card) {
       <div class="hp-name">${d.rname}</div>
       <div class="hp-type" style="color:${d.rcolor}">${d.type} · ${rarLabel}</div>
       ${d.desc ? `<div class="hp-desc">${d.desc}</div>` : ''}
-      ${chipPile}
+      ${chipPile ? `<div class="hp-divider"></div>${chipPile}` : ''}
+      <div class="hp-divider"></div>
       ${statusBadge}
     </div>
   `;
@@ -292,11 +320,14 @@ export function triggerXpBarVFX(amount) {
 }
 
 // ── Update the XP bar display (progressive XP curve) ──
+let _xpBarLastLevel = null;
+
 export function updateLevelXpBar() {
   const prog = getLevelProgress(state.ST.xp);
+  const currentLevel = state.ST.tier;
 
   const tierEl = document.getElementById('hud-tier');
-  if (tierEl) tierEl.textContent = state.ST.tier;
+  if (tierEl) tierEl.textContent = currentLevel;
 
   const xpEl = document.getElementById('hud-xp');
   if (xpEl) xpEl.textContent = prog.current;
@@ -304,13 +335,32 @@ export function updateLevelXpBar() {
   const xpMaxEl = document.getElementById('hud-xp-max');
   if (xpMaxEl) xpMaxEl.textContent = prog.max;
 
-  const xpFill = document.getElementById('level-xp-fill');
-  if (xpFill) xpFill.style.width = prog.pct + '%';
-
   const real = state.MS ? state.MS.filter(m => m.home !== 'TBD') : [];
   const done = real.filter(m => m.status === 'settled').length;
   const settledEl = document.getElementById('hud-settled');
   if (settledEl) settledEl.textContent = done;
   const totalEl = document.getElementById('hud-total');
   if (totalEl) totalEl.textContent = real.length;
+
+  const xpFill = document.getElementById('level-xp-fill');
+  if (!xpFill) { _xpBarLastLevel = currentLevel; return; }
+
+  const leveledUp = _xpBarLastLevel !== null && currentLevel > _xpBarLastLevel;
+  _xpBarLastLevel = currentLevel;
+
+  if (leveledUp) {
+    // Fill to 100% first, then jump to 0 and animate to new level's progress
+    xpFill.style.transition = 'width 0.5s cubic-bezier(.4,.2,.2,1)';
+    xpFill.style.width = '100%';
+    setTimeout(() => {
+      xpFill.style.transition = 'none';
+      xpFill.style.width = '0%';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        xpFill.style.transition = 'width 0.6s cubic-bezier(.4,.2,.2,1)';
+        xpFill.style.width = prog.pct + '%';
+      }));
+    }, 550);
+  } else {
+    xpFill.style.width = prog.pct + '%';
+  }
 }

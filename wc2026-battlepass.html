@@ -13,8 +13,91 @@
 <link rel="stylesheet" href="css/match-sim.css">
 <link rel="stylesheet" href="css/level-strip.css">
 <link rel="stylesheet" href="css/ai-widget.css">
+<link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════════════════
+     BATTLE PASS LANDING PAGE
+     ══════════════════════════════════════════════════════════ -->
+<div id="bp-landing">
+
+  <!-- Animated perspective grid floor -->
+  <div class="bp-grid-floor"></div>
+
+  <!-- Glow & atmosphere layers -->
+  <div class="bp-glow-center"></div>
+  <div class="bp-vignette"></div>
+  <div class="bp-scanlines"></div>
+  <div class="bp-sweep"></div>
+
+  <!-- Corner bracket decorations -->
+  <div class="bp-corner bp-corner-tl"></div>
+  <div class="bp-corner bp-corner-tr"></div>
+  <div class="bp-corner bp-corner-bl"></div>
+  <div class="bp-corner bp-corner-br"></div>
+
+  <!-- Floating particle container (populated by JS) -->
+  <div id="bp-particles-container"></div>
+
+  <!-- Blubo mascot cluster -->
+  <div class="bp-mascots">
+    <img src="img/blubo.svg" class="bp-blubo bp-blubo-hero"     alt="Blubo">
+    <img src="img/blubo.svg" class="bp-blubo bp-blubo-right"    alt="Blubo">
+    <img src="img/blubo.svg" class="bp-blubo bp-blubo-topright" alt="Blubo">
+    <img src="img/blubo.svg" class="bp-blubo bp-blubo-topleft"  alt="Blubo">
+    <img src="img/blubo.svg" class="bp-blubo bp-blubo-mid"      alt="Blubo">
+  </div>
+
+  <!-- Central content -->
+  <div class="bp-content">
+
+    <!-- Brand row -->
+    <div class="bp-brand">
+      <img src="img/blubo.svg" class="bp-brand-logo" alt="">
+      <span class="bp-brand-name">Lucky Logic</span>
+    </div>
+
+    <!-- Season badge -->
+    <div class="bp-badge">&#9917;&nbsp; FIFA World Cup 2026 &nbsp;&#9917;</div>
+
+    <!-- Trophy with spinning ring -->
+    <div class="bp-trophy-wrap">
+      <span class="bp-trophy">&#127942;</span>
+      <div class="bp-trophy-ring"></div>
+    </div>
+
+    <!-- Main title -->
+    <h1 class="bp-title">
+      <span class="bp-title-top">2026 WORLD CUP</span>
+      <span class="bp-title-main">BATTLE PASS</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="bp-subtitle">Predict &middot; Bet &middot; Level Up &middot; Dominate</p>
+
+    <!-- Feature pills -->
+    <div class="bp-features">
+      <div class="bp-feat">&#127942; Predict the Champion</div>
+      <div class="bp-feat">&#9889; Earn XP &amp; Level Up</div>
+      <div class="bp-feat">&#127873; Unlock Exclusive Rewards</div>
+      <div class="bp-feat">&#129521; Bet &amp; Win Coins</div>
+    </div>
+
+    <!-- CTA button -->
+    <div class="bp-cta-wrap">
+      <button class="bp-cta" onclick="startBattlePass()">
+        <span class="bp-cta-ball">&#9917;</span>
+        ENTER BATTLE PASS
+        <span class="bp-cta-arrow">&#8594;</span>
+      </button>
+    </div>
+
+    <!-- Footer tagline -->
+    <div class="bp-footer">48 Nations &nbsp;&middot;&nbsp; 104 Matches &nbsp;&middot;&nbsp; Unlimited Glory</div>
+
+  </div>
+</div>
 
 <!-- HEADER -->
 <header>
@@ -172,6 +255,23 @@
   </div>
 </div>
 
+<!-- CHAMPION HOVER TOOLTIP -->
+<div id="champ-tt" style="display:none">
+  <div class="champ-tt-header">
+    <div id="champ-tt-flag"></div>
+    <div class="champ-tt-meta">
+      <div class="champ-tt-name" id="champ-tt-name"></div>
+      <div class="champ-tt-group" id="champ-tt-group"></div>
+    </div>
+  </div>
+  <div class="champ-tt-power">
+    <span class="champ-tt-power-label">POWER</span>
+    <div class="champ-tt-bar"><div class="champ-tt-bar-fill" id="champ-tt-bar-fill"></div></div>
+    <span class="champ-tt-power-val" id="champ-tt-power-val"></span>
+  </div>
+  <div class="champ-tt-players" id="champ-tt-players"></div>
+</div>
+
 <div id="compare-overlay"></div>
 <div id="result-overlay"></div>
 <div id="reward-overlay"></div>
@@ -204,6 +304,6 @@ if (location.protocol === 'file:') {
   });
 }
 </script>
-<script type="module" src="js/main.js?v=9"></script>
+<script type="module" src="js/main.js?v=10"></script>
 </body>
 </html>

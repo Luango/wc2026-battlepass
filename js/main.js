@@ -5,6 +5,7 @@
 // Data
 import { state, initState, saveState, saveMatches } from './state.js?v=9';
 import { TEAMS, T, flagImg } from './data/teams.js?v=9';
+import { SQUADS } from './data/squads.js?v=9';
 import { genMatches } from './matches.js?v=9';
 
 // FX
@@ -107,18 +108,80 @@ setViewerDeps({ updateAll: updateAllWithLevels, renderMatches, toast });
 // ── Champion Prediction Screen ─────────────────────────────
 let _champPick = null;
 
+// ── Champion tooltip ────────────────────────────────────────
+const _tt = {
+  el: null, hideTimer: null,
+  show(tid, refEl) {
+    if (!this.el) this.el = document.getElementById('champ-tt');
+    if (!this.el) return;
+    clearTimeout(this.hideTimer);
+    const t = T[tid];
+    if (!t) return;
+
+    // Populate header
+    document.getElementById('champ-tt-flag').innerHTML = flagImg(tid, 'champ-flag');
+    document.getElementById('champ-tt-name').textContent = t.name;
+    document.getElementById('champ-tt-group').textContent = `GROUP ${t.group}`;
+
+    // Power bar
+    const pct = Math.round((t.str - 55) / (95 - 55) * 100);
+    document.getElementById('champ-tt-bar-fill').style.width = pct + '%';
+    document.getElementById('champ-tt-power-val').textContent = t.str;
+
+    // Top players
+    const squad = SQUADS[tid] || [];
+    const top = [...squad].sort((a, b) => b.r - a.r).slice(0, 4);
+    const ppHTML = top.length
+      ? `<div class="champ-tt-section">KEY PLAYERS</div>` + top.map(p => `
+          <div class="champ-tt-player">
+            <span class="champ-tt-pos ${p.p}">${p.p}</span>
+            <span class="champ-tt-pname">${p.n}</span>
+            <span class="champ-tt-prating">${p.r}</span>
+          </div>`).join('')
+      : `<div class="champ-tt-section" style="opacity:.5">SQUAD DATA PENDING</div>`;
+    document.getElementById('champ-tt-players').innerHTML = ppHTML;
+
+    // Position tooltip near card
+    const r = refEl.getBoundingClientRect();
+    const ttW = 260, ttH = 200;
+    let left = r.right + 10;
+    if (left + ttW > window.innerWidth - 8) left = r.left - ttW - 10;
+    let ttTop = r.top + r.height / 2 - ttH / 2;
+    ttTop = Math.max(8, Math.min(ttTop, window.innerHeight - ttH - 8));
+
+    this.el.style.left = left + 'px';
+    this.el.style.top  = ttTop + 'px';
+    this.el.style.display = 'block';
+    // Re-trigger animation
+    this.el.classList.remove('champ-tt-visible');
+    void this.el.offsetWidth;
+    this.el.classList.add('champ-tt-visible');
+  },
+  hide() {
+    if (!this.el) return;
+    this.hideTimer = setTimeout(() => {
+      if (this.el) this.el.style.display = 'none';
+    }, 80);
+  }
+};
+
 function buildChampionGrid() {
   const grid = document.getElementById('champ-grid');
   if (!grid) return;
   // Sort teams by strength descending
   const sorted = [...TEAMS].sort((a, b) => b.str - a.str);
-  grid.innerHTML = sorted.map(t => `
-    <div class="champ-card" data-tid="${t.id}" onclick="selectChampion('${t.id}')">
+  grid.innerHTML = sorted.map((t, i) => `
+    <div class="champ-card" data-tid="${t.id}" onclick="selectChampion('${t.id}')" style="--ci:${i}">
       ${flagImg(t.id, 'champ-flag')}
       <span class="champ-name">${t.name}</span>
       <span class="champ-str">${t.str}</span>
     </div>
   `).join('');
+
+  grid.querySelectorAll('.champ-card').forEach(card => {
+    card.addEventListener('mouseenter', () => _tt.show(card.dataset.tid, card));
+    card.addEventListener('mouseleave', () => _tt.hide());
+  });
 }
 
 function selectChampion(tid) {
@@ -253,10 +316,66 @@ state.activePhase = state.MS.find(m => m.dateKey === state.activeDay)?.phaseId |
 updateAllWithLevels();
 renderMatches();
 
-// Show champion pick if no champion selected yet, otherwise show badge
+// ── Battle Pass Landing Page ───────────────────────────────
+function spawnLandingParticles() {
+  const container = document.getElementById('bp-particles-container');
+  if (!container) return;
+  const colors = ['#00d4ff', '#a8ff78', '#ffffff', '#7eb8ff', '#f0c870'];
+  const count = 28;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'bp-particle';
+    const size  = Math.random() * 4 + 2;
+    const delay = Math.random() * 8;
+    const dur   = Math.random() * 6 + 6;
+    const left  = Math.random() * 100;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${left}%;
+      bottom:0;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration:${dur}s;
+      animation-delay:${delay}s;
+      box-shadow: 0 0 ${size * 2}px ${colors[Math.floor(Math.random() * colors.length)]};
+    `;
+    container.appendChild(p);
+  }
+}
+
+function showLandingPage() {
+  const el = document.getElementById('bp-landing');
+  if (el) {
+    el.style.display = 'flex';
+    spawnLandingParticles();
+  }
+}
+
+function hideLandingPage() {
+  const el = document.getElementById('bp-landing');
+  if (!el) return;
+  el.classList.add('bp-exit');
+  setTimeout(() => { el.style.display = 'none'; }, 750);
+}
+
+function startBattlePass() {
+  hideLandingPage();
+  setTimeout(() => {
+    if (!state.ST.champion) {
+      showChampionPick();
+    } else {
+      showChampionBadge(state.ST.champion);
+    }
+  }, 400);
+}
+
+window.startBattlePass = startBattlePass;
+window.showChampionPick = showChampionPick;
+
+// Show landing page first; champion pick shown after player clicks through
 if (!state.ST.champion) {
-  showChampionPick();
+  showLandingPage();
 } else {
+  // Returning player: briefly show landing then go straight to game
   showChampionBadge(state.ST.champion);
 }
 

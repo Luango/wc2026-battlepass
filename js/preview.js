@@ -17,7 +17,7 @@ import { resolveBet } from './betting/settlement.js?v=9';
 import { calcGoalscorerOdds } from './betting/odds.js?v=9';
 import { advanceWinner } from './simulation.js?v=9';
 import { renderStatsPanel, onPlayerSelected, resetStatsState, drawRadar, renderBars,
-         startCompare, clearCompare, renderCompareOverlay, closeCompareOverlay } from './player-stats.js?v=9';
+         startCompare, clearCompare, renderCompareOverlay, closeCompareOverlay, psState } from './player-stats.js?v=9';
 import { getPlayerStats } from './data/squads.js?v=9';
 import { getAITicker, getAIVerdict, generateMatchNews, generateAIResponse, aiChatHistory } from './ai-system.js?v=9';
 
@@ -84,6 +84,11 @@ export function openPreview(mid) {
     if (list) list.style.display = 'none';
     document.getElementById('left-panel').style.display = 'none';
     document.getElementById('right-panel').style.display = 'none';
+    // Hide day banner & strip so pitch gets vertical space
+    const dayBanner = document.getElementById('day-banner');
+    const dayStrip = document.querySelector('.day-strip-wrap');
+    if (dayBanner) dayBanner.style.display = 'none';
+    if (dayStrip) dayStrip.style.display = 'none';
     const layout = document.querySelector('.layout');
     if (layout) layout.style.gridTemplateColumns = '1fr';
     if (simBtns) {
@@ -111,7 +116,8 @@ export function openPreview(mid) {
             <span class="pitch-bet-cta">Bet Starting 11</span>
           </button>
         </div>
-        <div id="pitch-wrap"><div id="tactical-board"></div></div>
+        <div id="tactical-board"></div>
+        <div id="pitch-wrap"></div>
       </div>
       <div id="preview-right" class="preview-sp right"></div>`;
     center.appendChild(shell);
@@ -165,6 +171,11 @@ export function closePreview() {
 
   document.getElementById('left-panel').style.display = '';
   document.getElementById('right-panel').style.display = '';
+  // Restore day banner & strip
+  const dayBanner = document.getElementById('day-banner');
+  const dayStrip = document.querySelector('.day-strip-wrap');
+  if (dayBanner) dayBanner.style.display = '';
+  if (dayStrip) dayStrip.style.display = '';
   const layout = document.querySelector('.layout');
   if (layout) layout.style.gridTemplateColumns = '';
 
@@ -649,7 +660,7 @@ function selectPlayer(side, squadIdx, teamId) {
   const pl = squad[squadIdx];
   if (pl) {
     _selectedPlayerData = { pl, teamId, side, squadIdx, stats: getPlayerStats(pl) };
-    showPlayerPopup(pl, teamId, null);
+    document.getElementById('player-popup').style.display = 'none';
     onPlayerSelected(pl, teamId, side, squadIdx);
   }
 }
@@ -1472,14 +1483,38 @@ function renderFallbackPlayers(homeId, awayId) {
       }
 
       token.addEventListener('mouseenter', (event) => {
-        clearTokenHighlights();
+        state.fallbackPlayers.forEach(fp => fp.el.classList.remove('hover'));
         token.classList.add('hover');
-        showPlayerPopup(pl, teamId, event);
+        const isLockedToken = _selectedPlayerData &&
+          _selectedPlayerData.side === side &&
+          _selectedPlayerData.squadIdx === squadIdx;
+        const compareWith = !isLockedToken ? _selectedPlayerData : null;
+        showPlayerPopup(pl, teamId, event, compareWith);
+        // Also update left-panel stats to show live comparison
+        if (compareWith) {
+          const statsEl = document.getElementById('ps-tab-content');
+          if (statsEl) {
+            psState.compareMode = true;
+            psState.comparePlayerA = compareWith;
+            psState.comparePlayerB = { pl, teamId, stats: getPlayerStats(pl), side, squadIdx };
+            renderStatsPanel(statsEl);
+          }
+        }
       });
       token.addEventListener('mouseleave', () => {
         document.getElementById('player-popup').style.display = 'none';
-        clearTokenHighlights();
-        restoreSelectedHighlight();
+        token.classList.remove('hover');
+        // Restore left-panel stats to locked player solo view
+        if (_selectedPlayerData) {
+          const statsEl = document.getElementById('ps-tab-content');
+          if (statsEl) {
+            psState.compareMode = false;
+            psState.comparePlayerA = null;
+            psState.comparePlayerB = null;
+            psState.selectedPlayer = _selectedPlayerData;
+            renderStatsPanel(statsEl);
+          }
+        }
       });
       token.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -1524,9 +1559,73 @@ function highlightToken(side, idx) {
 }
 
 // ── PLAYER POPUP (rich stats panel on hover) ────────────────
-function showPlayerPopup(pl, teamId, event) {
+function showPlayerPopup(pl, teamId, event, lockedData) {
   const popup = document.getElementById('player-popup');
   const stats = getPlayerStats(pl);
+
+  if (lockedData) {
+    // ── COMPARE MODE: locked player (A) vs hovered player (B) ──
+    const lpl = lockedData.pl, ltid = lockedData.teamId, lstats = lockedData.stats;
+    const surname = n => { const s = n.split(' ').pop(); return s.length > 9 ? s.slice(0,8)+'.' : s; };
+
+    popup.innerHTML = `
+      <div class="pp-cmp-label">&#128274; LOCKED vs HOVERED</div>
+      <div class="pp-cmp-header">
+        <div class="pp-cmp-side pp-cmp-a">
+          <div class="pp-cmp-av" id="pp-cmp-av-a">${playerAvatar(lpl.n, 36)}</div>
+          <div class="pp-cmp-name">${surname(lpl.n)}</div>
+          <div class="pp-cmp-pos">${flagImg(ltid,'flag-img-sm')} ${lpl.p}</div>
+          <div class="pp-cmp-ovr pp-cmp-ovr-a">${lpl.r}</div>
+        </div>
+        <div class="pp-cmp-vs">VS</div>
+        <div class="pp-cmp-side pp-cmp-b">
+          <div class="pp-cmp-av" id="pp-cmp-av-b">${playerAvatar(pl.n, 36)}</div>
+          <div class="pp-cmp-name">${surname(pl.n)}</div>
+          <div class="pp-cmp-pos">${flagImg(teamId,'flag-img-sm')} ${pl.p}</div>
+          <div class="pp-cmp-ovr pp-cmp-ovr-b">${pl.r}</div>
+        </div>
+      </div>
+      <div class="pp-radar" id="pp-radar-wrap"></div>
+      <div class="pp-bars" id="pp-bars"></div>
+      <div class="pp-cmp-tip">Click another player to change lock &middot; click locked player to unlock</div>`;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 180; canvas.height = 180;
+    document.getElementById('pp-radar-wrap')?.appendChild(canvas);
+    drawRadar(canvas, [lstats, stats]);
+    renderBars(document.getElementById('pp-bars'), lstats, stats);
+
+    popup.style.display = 'block';
+    popup.classList.add('pp-compare-mode');
+
+    if (event) {
+      const pad = 12;
+      let x = event.clientX + pad;
+      let y = event.clientY - 40;
+      const pw = 320, ph = 440;
+      if (x + pw > window.innerWidth) x = event.clientX - pw - pad;
+      if (y + ph > window.innerHeight) y = window.innerHeight - ph - pad;
+      if (y < pad) y = pad;
+      popup.style.left = x + 'px';
+      popup.style.top = y + 'px';
+    }
+
+    // Load photos
+    loadPlayerPhoto(lpl.n).then(url => {
+      if (!url) return;
+      const el = document.getElementById('pp-cmp-av-a');
+      if (el) el.innerHTML = `<img src="${url}" alt="${lpl.n}" style="width:36px;height:36px;object-fit:cover;object-position:top center;border-radius:50%" onerror="this.style.display='none'">`;
+    });
+    loadPlayerPhoto(pl.n).then(url => {
+      if (!url) return;
+      const el = document.getElementById('pp-cmp-av-b');
+      if (el) el.innerHTML = `<img src="${url}" alt="${pl.n}" style="width:36px;height:36px;object-fit:cover;object-position:top center;border-radius:50%" onerror="this.style.display='none'">`;
+    });
+    return;
+  }
+
+  // ── NORMAL MODE: single player popup ──
+  popup.classList.remove('pp-compare-mode');
   const avatarHtml = playerAvatar(pl.n, 48);
 
   popup.innerHTML = `
@@ -1547,7 +1646,7 @@ function showPlayerPopup(pl, teamId, event) {
       <span>Foot: ${stats.foot==='R'?'Right':'Left'}</span>
     </div>
     <div class="pp-bars" id="pp-bars"></div>
-    <div class="pp-compare-btn" onclick="startCompareFromPopup(this)" data-pl='${JSON.stringify({n:pl.n,num:pl.num,p:pl.p,r:pl.r,a:pl.a}).replace(/'/g,"&#39;")}' data-teamid="${teamId}">&#9876; COMPARE</div>`;
+    <div class="pp-lock-hint">&#128274; Click to lock &amp; compare</div>`;
 
   // Draw radar chart
   const canvas = document.createElement('canvas');

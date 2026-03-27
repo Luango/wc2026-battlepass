@@ -329,11 +329,11 @@ export function renderMatches() {
 // ── MATCH CARD ─────────────────────────────────────────────
 function mc(m) {
   if (m.home==='TBD' || m.away==='TBD') {
-    return `<div class="mc" style="opacity:.55">
+    const isFinalTbd = m.phaseId === 'final';
+    return `<div class="mc${isFinalTbd?' mc-final-card':''}" style="opacity:.55">
       <div class="mc-body" style="pointer-events:none">
         <div class="mc-team"><div><div class="tname" style="color:var(--muted)">TBD</div></div></div>
-        <div class="mc-mid"><div class="mc-vs" style="font-size:8px">vs</div>
-          <div class="mc-phase">${m.phase}</div></div>
+        <div class="mc-mid">${isFinalTbd ? `<div class="mc-final-label">★ FINAL ★</div>` : `<div class="mc-vs" style="font-size:8px">vs</div><div class="mc-phase">${m.phase}</div>`}</div>
         <div class="mc-team away"><div><div class="tname" style="color:var(--muted)">TBD</div></div></div>
       </div></div>`;
   }
@@ -355,9 +355,14 @@ function mc(m) {
     : `<div class="mc-result-banner mc-win-banner">${homeWin ? h.name : a.name} WIN</div>`)
     : '';
 
-  const mid = done && m.score
-    ? `<div class="mc-score">${m.score[0]}–${m.score[1]}</div><div class="mc-phase">${m.phase}</div>`
-    : `<div class="mc-vs">VS</div><div class="mc-phase">${m.phase}</div><div class="mc-preview-hint">${m.kickoff||''}</div>`;
+  const isFinal = m.phaseId === 'final';
+  const mid = isFinal
+    ? (done && m.score
+        ? `<div class="mc-final-label">★ FINAL ★</div><div class="mc-score">${m.score[0]}–${m.score[1]}</div>`
+        : `<div class="mc-final-label">★ FINAL ★</div><div class="mc-preview-hint">${m.kickoff||''}</div>`)
+    : (done && m.score
+        ? `<div class="mc-score">${m.score[0]}–${m.score[1]}</div><div class="mc-phase">${m.phase}</div>`
+        : `<div class="mc-vs">VS</div><div class="mc-phase">${m.phase}</div><div class="mc-preview-hint">${m.kickoff||''}</div>`);
 
   const quickOdds = done ? '' : `<div class="mc-quick-odds">
     <span>${odds.home}<span class="qlbl">1</span></span>
@@ -390,7 +395,7 @@ function mc(m) {
 
   const settledClass = done ? (homeWin || awayWin ? ' mc-settled' : ' mc-settled mc-settled-draw') : '';
 
-  return `<div class="mc${done?'':' mc-clickable'}${settledClass}" data-mid="${m.id}" onclick="openPreview(${m.id})">
+  return `<div class="mc${done?'':' mc-clickable'}${settledClass}${isFinal?' mc-final-card':''}" data-mid="${m.id}" onclick="openPreview(${m.id})">
     ${winnerBanner}
     <div class="mc-body">
       <div class="mc-teams-row">

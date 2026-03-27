@@ -1,5 +1,14 @@
 /* ── TACTICAL PREVIEW ── */
-#pitch-wrap{position:relative;width:100%;height:100%;overflow:hidden;aspect-ratio:1.5;max-width:100%;max-height:100%}
+#pitch-wrap{
+  position:relative;
+  overflow:hidden;
+  aspect-ratio:1.5;
+  /* Fill remaining vertical space; derive width from height × 1.5 */
+  flex:1 1 0;
+  min-height:0;
+  max-width:100%;
+  align-self:center
+}
 
 #player-popup{position:fixed;background:#110d18;border:1px solid rgba(255,51,51,0.4);
               border-radius:8px;padding:14px 16px 12px;pointer-events:none;z-index:200;
@@ -80,7 +89,8 @@
   overflow:hidden;background-size:cover;background-position:top center
 }
 .fp-token .fp-avatar{
-  width:100%;height:100%;border-radius:4px;object-fit:cover;object-position:top center;
+  position:absolute;inset:0;width:100%;height:100%;border-radius:4px;
+  object-fit:cover;object-position:top center;
   display:block;pointer-events:none
 }
 .fp-token .fp-badge{
@@ -99,8 +109,13 @@
 .fp-token.away{background:linear-gradient(180deg,#38bdf8,#0284c7);border-color:rgba(56,189,248,.7);box-shadow:0 3px 12px rgba(56,189,248,.3)}
 .fp-token.gk{background:linear-gradient(180deg,#f97316,#c2410c);border-color:rgba(249,115,22,.7);box-shadow:0 3px 12px rgba(249,115,22,.3)}
 .fp-token.active{
-  transform:translate(-50%,-50%) scale(1.15);
-  box-shadow:0 0 0 3px rgba(255,51,51,.6),0 4px 16px rgba(0,0,0,.5)
+  transform:translate(-50%,-50%) scale(1.18);
+  box-shadow:0 0 0 3px #f0c840,0 0 14px rgba(240,200,64,.55),0 4px 16px rgba(0,0,0,.5);
+  animation:locked-pulse 1.4s ease-in-out infinite
+}
+@keyframes locked-pulse{
+  0%,100%{box-shadow:0 0 0 3px #f0c840,0 0 14px rgba(240,200,64,.55),0 4px 16px rgba(0,0,0,.5)}
+  50%{box-shadow:0 0 0 4px #ffe066,0 0 24px rgba(240,200,64,.8),0 4px 20px rgba(0,0,0,.6)}
 }
 .fp-token.hover{
   transform:translate(-50%,-50%) scale(1.1);
@@ -127,7 +142,8 @@
   flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr 320px;overflow:hidden
 }
 .sp-center{
-  position:relative;min-height:0;background:#08060e
+  position:relative;min-height:0;background:#08060e;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden
 }
 /* lineup tabs in left panel */
 .lineup-tabs{display:flex;border-bottom:1px solid var(--border);background:rgba(0,0,0,.3)}
@@ -233,23 +249,54 @@
 .rbar{flex:1;height:3px;background:rgba(255,255,255,0.1);border-radius:99px;overflow:hidden}
 .rbar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#ff3333,#9333ea)}
 
-/* tactical board in center panel */
+/* tactical board — horizontal strip above pitch */
 #tactical-board{
-  position:absolute;top:12px;left:12px;z-index:12;pointer-events:auto;
-  width:332px;max-width:calc(100% - 24px);
-  background:rgba(12,8,20,.9);border:1px solid rgba(220,50,50,.32);border-radius:4px;
-  padding:9px 10px 8px;box-shadow:0 6px 24px rgba(0,0,0,.35)
+  flex-shrink:0;pointer-events:auto;
+  width:100%;
+  background:rgba(12,8,20,.95);
+  border-top:1px solid rgba(220,50,50,.32);
+  border-bottom:1px solid rgba(220,50,50,.32);
+  padding:8px 14px;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  display:none;
+  /* horizontal grid: [title+xG] [prob bars] [metrics] [button] */
+  grid-template-columns:auto 1fr auto auto;
+  grid-template-rows:auto auto auto;
+  column-gap:16px;
+  row-gap:2px;
+  align-items:center
+}
+#tactical-board:not(:empty){display:grid}
+/* title + xG score stacked, spanning all 3 rows */
+#tactical-board .tb-head{
+  grid-column:1;grid-row:1/4;
+  flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:0
+}
+/* 3 probability rows in column 2 */
+#tactical-board .tb-prob:nth-child(2){grid-column:2;grid-row:1;margin:0}
+#tactical-board .tb-prob:nth-child(3){grid-column:2;grid-row:2;margin:0}
+#tactical-board .tb-prob:nth-child(4){grid-column:2;grid-row:3;margin:0}
+/* metrics in column 3, spanning all rows */
+#tactical-board .tb-metrics{
+  grid-column:3;grid-row:1/4;
+  margin-top:0;padding-top:0;border-top:none;border-left:1px solid rgba(220,50,50,.12);
+  padding-left:14px
+}
+/* simulate button in column 4 */
+#tactical-board .tb-sim-btn{
+  grid-column:4;grid-row:1/4;
+  margin-top:0;width:auto;white-space:nowrap;padding:10px 16px
 }
 .tb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
 .tb-title{font-size:10px;color:var(--gold-light);font-weight:900;letter-spacing:1px;text-transform:uppercase}
-.tb-score{font-size:15px;font-weight:900;color:#f1f0f5;letter-spacing:.8px}
-.tb-prob{display:grid;grid-template-columns:52px 1fr 36px;gap:6px;align-items:center;margin:3px 0}
+.tb-score{font-size:18px;font-weight:900;color:#f1f0f5;letter-spacing:.8px}
+.tb-prob{display:grid;grid-template-columns:48px 1fr 32px;gap:5px;align-items:center;margin:3px 0}
 .tb-prob-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.45px}
 .tb-prob-val{font-size:11px;color:var(--gold-light);text-align:right;font-weight:700}
 .tb-bar{height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
 .tb-bar-fill{height:100%;border-radius:99px}
-.tb-metrics{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-top:7px;padding-top:7px;border-top:1px solid rgba(220,50,50,.12)}
-.tb-m{display:flex;justify-content:space-between;font-size:10px}
+.tb-metrics{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;margin-top:7px;padding-top:7px;border-top:1px solid rgba(220,50,50,.12)}
+.tb-m{display:flex;justify-content:space-between;font-size:10px;gap:8px}
 .tb-m-k{color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
 .tb-m-v{color:#f1f0f5;font-weight:700}
 .tb-sim-btn{
@@ -473,9 +520,51 @@
 }
 .pp-compare-btn:hover{background:rgba(220,50,50,.1);color:var(--gold)}
 
-.fp-bet-btn{background:linear-gradient(135deg,#ff3333,#9333ea);border:1px solid rgba(255,51,51,.6);
-  color:#fff;padding:6px 14px;border-radius:3px;cursor:pointer;font-size:10px;font-weight:900;
-  letter-spacing:1px;text-transform:uppercase;transition:all .15s}
+/* Lock hint in normal popup */
+.pp-lock-hint{
+  margin-top:8px;padding:5px 0;text-align:center;
+  font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:.8px;border-top:1px solid rgba(255,255,255,.06)
+}
+
+/* Compare mode popup */
+#player-popup.pp-compare-mode{width:320px;border-color:rgba(240,200,64,.45);
+  background:linear-gradient(160deg,#12101a,#0e0c16)}
+.pp-cmp-label{
+  font-size:9px;font-weight:900;letter-spacing:1.5px;
+  color:#f0c840;text-align:center;margin-bottom:8px;opacity:.8
+}
+.pp-cmp-header{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.pp-cmp-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.pp-cmp-av{width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;
+           border:2px solid rgba(255,255,255,.15);background:#1a1228}
+.pp-cmp-a .pp-cmp-av{border-color:rgba(240,200,64,.6)}
+.pp-cmp-b .pp-cmp-av{border-color:rgba(100,176,240,.6)}
+.pp-cmp-name{font-size:11px;font-weight:900;color:#fff;white-space:nowrap;
+             overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center}
+.pp-cmp-pos{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:3px}
+.pp-cmp-ovr{font-size:18px;font-weight:900;line-height:1;padding:3px 8px;border-radius:4px}
+.pp-cmp-ovr-a{color:#f0c840;background:rgba(240,200,64,.1)}
+.pp-cmp-ovr-b{color:#64b0f0;background:rgba(100,176,240,.1)}
+.pp-cmp-vs{
+  font-size:11px;font-weight:900;color:var(--muted);
+  flex-shrink:0;padding:0 4px;letter-spacing:1px
+}
+.pp-cmp-tip{
+  margin-top:6px;padding:4px 0;text-align:center;
+  font-size:9px;color:var(--muted);letter-spacing:.5px;
+  border-top:1px solid rgba(255,255,255,.05)
+}
+
+.fp-bet-btn{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(135deg,rgba(255,51,51,.85),rgba(147,51,234,.85));
+  border:none;border-top:1px solid rgba(255,51,51,.5);
+  color:#fff;padding:3px 0;border-radius:0 0 4px 4px;cursor:pointer;font-size:9px;font-weight:900;
+  letter-spacing:.5px;text-transform:uppercase;transition:all .15s;
+  opacity:0;pointer-events:none;text-align:center
+}
+.fp-token:hover .fp-bet-btn{opacity:1;pointer-events:auto}
 
 /* ═══════════════════════════════════════════════════════════
    INLINE SIMULATION — tactical preview sim mode
@@ -499,28 +588,26 @@
 .isim-flag{width:28px;height:19px;object-fit:cover;border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .isim-sb-center{position:relative}
 
-/* Player dots */
+/* Player dots — Blubo mascot */
 #isim-players{position:absolute;inset:0;z-index:8;pointer-events:none}
 .isim-player{position:absolute;transform:translate(-50%,-50%);
-  width:24px;height:24px;border-radius:50%;
+  width:34px;height:38px;border-radius:0;border:none;box-shadow:none;
   display:flex;align-items:center;justify-content:center;
   font-size:9px;font-weight:900;color:#fff;z-index:5;
   transition:left .1s linear,top .1s linear;
-  box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  background:url('../img/blubo.svg') center bottom/contain no-repeat;
+  filter:drop-shadow(0 2px 5px rgba(0,212,255,.5))}
 .isim-player.home{
-  background:radial-gradient(circle at 40% 30%,#fbbf24,#d97706);
-  border:2px solid rgba(251,191,36,.7);
-  box-shadow:0 2px 6px rgba(251,191,36,.3)}
+  filter:hue-rotate(-150deg) saturate(1.6) brightness(1.1)
+         drop-shadow(0 2px 5px rgba(251,191,36,.6))}
 .isim-player.away{
-  background:radial-gradient(circle at 40% 30%,#38bdf8,#0284c7);
-  border:2px solid rgba(56,189,248,.7);
-  box-shadow:0 2px 6px rgba(56,189,248,.3)}
+  filter:drop-shadow(0 2px 5px rgba(56,189,248,.6))}
 .isim-player.gk{
-  background:radial-gradient(circle at 40% 30%,#f97316,#c2410c) !important;
-  border-color:rgba(249,115,22,.7) !important;
-  box-shadow:0 2px 6px rgba(249,115,22,.3) !important}
+  filter:hue-rotate(-120deg) saturate(2.2) brightness(1.1)
+         drop-shadow(0 2px 5px rgba(249,115,22,.6)) !important}
 .isim-player-num{font-size:9px;font-weight:900;line-height:1;
-  text-shadow:0 1px 2px rgba(0,0,0,.6)}
+  color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);
+  position:relative;margin-top:-10px;z-index:2}
 .isim-player-name{position:absolute;top:100%;left:50%;transform:translateX(-50%);
   font-size:7px;font-weight:700;color:#fff;white-space:nowrap;
   text-shadow:0 1px 3px rgba(0,0,0,.9);margin-top:1px;pointer-events:none}
@@ -644,7 +731,7 @@
   display:grid;grid-template-columns:1fr 1fr;gap:12px;
   padding:12px;background:linear-gradient(180deg,rgba(255,51,51,.08),rgba(147,51,234,.05));
   border-bottom:2px solid var(--accent-red);position:relative;
-  z-index:10
+  z-index:10;flex-shrink:0
 }
 
 .pitch-bet-btn{

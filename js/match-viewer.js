@@ -75,10 +75,13 @@ function createOverlay() {
   el.id = 'match-viewer-overlay';
   el.innerHTML = `
     <div class="mv-container">
+      <!-- FINAL BANNER -->
+      ${currentMatch.phaseId === 'final' ? `<div class="mv-final-banner">⭐ THE FINAL ⭐</div>` : ''}
+
       <!-- TOP BAR -->
       <div class="mv-topbar">
         <div class="mv-topbar-left">
-          <span class="mv-phase-badge">${currentMatch.phase}</span>
+          <span class="mv-phase-badge${currentMatch.phaseId === 'final' ? ' mv-phase-badge-final' : ''}">${currentMatch.phase}</span>
           <span class="mv-venue-text">${currentMatch.date}</span>
         </div>
         <div class="mv-topbar-right">
@@ -282,6 +285,7 @@ function processEventsUpTo(minute) {
       if (e.type === EVT.GOAL || e.type === EVT.PEN_GOAL) {
         SFX.bigWin();
         flashPitch('goal');
+        showGoalPopup(e);
       } else if (e.type === EVT.RED) {
         SFX.error();
         flashPitch('red');
@@ -509,6 +513,46 @@ function flashPitch(type) {
   const cls = `mv-flash-${type}`;
   pitch.classList.add(cls);
   setTimeout(() => pitch.classList.remove(cls), 1200);
+}
+
+// ── Goal popup ───────────────────────────────────────────
+function showGoalPopup(event) {
+  if (!overlay) return;
+
+  // Pause simulation
+  stopPlay();
+
+  // Determine scorer info
+  const isHome = event.team === 'home';
+  const teamName = isHome
+    ? (T[currentMatch.home]?.name || currentMatch.home)
+    : (T[currentMatch.away]?.name || currentMatch.away);
+  const scorerName = event.player || '';
+  const minute = event.minute || currentMinute;
+
+  // Remove any existing goal popup
+  overlay.querySelector('.mv-goal-popup')?.remove();
+
+  const popup = document.createElement('div');
+  popup.className = 'mv-goal-popup';
+  popup.innerHTML = `
+    <div class="mv-goal-burst"></div>
+    <div class="mv-goal-content">
+      <div class="mv-goal-label">GOAL!</div>
+      <div class="mv-goal-team">${teamName}</div>
+      ${scorerName ? `<div class="mv-goal-scorer">⚽ ${scorerName} ${minute}'</div>` : ''}
+    </div>
+  `;
+  overlay.appendChild(popup);
+
+  // Auto-dismiss after 2.8s then resume
+  setTimeout(() => {
+    popup.classList.add('mv-goal-popup-out');
+    setTimeout(() => {
+      popup.remove();
+      startPlay();
+    }, 400);
+  }, 2800);
 }
 
 // ── Handle match end — settle the match ──────────────────

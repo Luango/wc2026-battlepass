@@ -27,6 +27,26 @@
   background: linear-gradient(180deg, #12081a, #0a0610);
   border-bottom: 1px solid var(--border);
 }
+/* FINAL banner in match viewer */
+.mv-final-banner {
+  text-align: center; padding: 10px 0; letter-spacing: 6px; font-weight: 900;
+  font-size: 22px; text-transform: uppercase;
+  background: linear-gradient(90deg, transparent, rgba(255,180,0,.12), rgba(255,210,0,.22), rgba(255,180,0,.12), transparent);
+  color: #ffd700;
+  border-bottom: 2px solid rgba(255,180,0,.4);
+  text-shadow: 0 0 20px rgba(255,200,0,.7), 0 0 40px rgba(255,180,0,.4);
+  animation: mv-final-glow 1.8s ease-in-out infinite;
+}
+.mv-phase-badge-final {
+  background: rgba(255,180,0,.15) !important;
+  border-color: rgba(255,180,0,.5) !important;
+  color: #ffd700 !important;
+}
+@keyframes mv-final-glow {
+  0%,100% { text-shadow: 0 0 20px rgba(255,200,0,.7), 0 0 40px rgba(255,180,0,.4); }
+  50% { text-shadow: 0 0 30px rgba(255,220,0,1), 0 0 60px rgba(255,200,0,.6), 0 0 80px rgba(255,180,0,.3); }
+}
+
 .mv-topbar-left { display: flex; align-items: center; gap: 12px; }
 .mv-phase-badge {
   font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
@@ -74,17 +94,20 @@
   min-height: 0; overflow: hidden;
 }
 .mv-pitch-area {
-  display: flex; flex-direction: column; min-height: 0;
-  padding: 12px; gap: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 0; padding: 12px; gap: 8px; overflow: hidden;
 }
 
 /* ── Pitch ──────────────────────────────────────────────── */
 .mv-pitch {
-  flex: 0; position: relative; border-radius: 6px; overflow: hidden;
+  position: relative; border-radius: 6px; overflow: hidden;
   background: linear-gradient(180deg, #1a5c1a, #145014);
   border: 2px solid rgba(255, 255, 255, 0.15);
-  min-height: 200px; aspect-ratio: 1.5;
-  width: 100%; max-height: 100%;
+  aspect-ratio: 1.5;
+  /* Fill remaining vertical space; derive width from height × 1.5 */
+  flex: 1 1 0; min-height: 0;
+  max-width: 100%;
+  align-self: center;
 }
 /* Grass stripes */
 .mv-pitch::before {
@@ -169,31 +192,35 @@
 /* ── Players ────────────────────────────────────────────── */
 .mv-player {
   position: absolute; transform: translate(-50%, -50%);
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 38px; height: 42px;
+  border-radius: 0; border: none; box-shadow: none;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 900; color: #fff;
   cursor: default; z-index: 5;
   transition: left 0.12s linear, top 0.12s linear;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  background: url('../img/blubo.svg') center bottom / contain no-repeat;
+  filter: drop-shadow(0 2px 6px rgba(0, 212, 255, 0.5));
 }
 .mv-player.home {
-  background: radial-gradient(circle at 40% 30%, #fbbf24, #d97706);
-  border: 2px solid rgba(251,191,36,.7);
-  box-shadow: 0 2px 8px rgba(251,191,36,.3);
+  /* Shift blubo hue to golden/amber for home team */
+  filter: hue-rotate(-150deg) saturate(1.6) brightness(1.1)
+          drop-shadow(0 2px 6px rgba(251, 191, 36, 0.6));
 }
 .mv-player.away {
-  background: radial-gradient(circle at 40% 30%, #38bdf8, #0284c7);
-  border: 2px solid rgba(56,189,248,.7);
-  box-shadow: 0 2px 8px rgba(56,189,248,.3);
+  /* Natural cyan/blue blubo for away team */
+  filter: drop-shadow(0 2px 6px rgba(56, 189, 248, 0.6));
 }
 .mv-player.gk {
-  background: radial-gradient(circle at 40% 30%, #f97316, #c2410c) !important;
-  border-color: rgba(249,115,22,.7) !important;
-  box-shadow: 0 2px 8px rgba(249,115,22,.3);
+  /* Orange tint for goalkeepers */
+  filter: hue-rotate(-120deg) saturate(2.2) brightness(1.1)
+          drop-shadow(0 2px 6px rgba(249, 115, 22, 0.6)) !important;
 }
 .mv-player-num {
-  font-size: 10px; font-weight: 900; line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  font-size: 9px; font-weight: 900; line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  position: relative;
+  margin-top: -10px; /* nudge into blubo face area */
+  z-index: 2;
 }
 .mv-player-name {
   position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
@@ -428,4 +455,87 @@
   background: linear-gradient(180deg, #1a3a2a, #0d2a1a);
   border-color: rgba(90, 170, 94, 0.7);
   box-shadow: 0 0 10px rgba(90, 170, 94, 0.2);
+}
+
+/* ── Goal Popup ─────────────────────────────────────────── */
+.mv-goal-popup {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: mv-goal-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.mv-goal-popup.mv-goal-popup-out {
+  animation: mv-goal-out 0.4s ease-in forwards;
+}
+@keyframes mv-goal-in {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes mv-goal-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.15); }
+}
+
+/* radial burst rings behind the card */
+.mv-goal-burst {
+  position: absolute;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,200,50,.22) 0%, transparent 70%);
+  animation: mv-burst-pulse 0.6s ease-out infinite alternate;
+}
+@keyframes mv-burst-pulse {
+  from { transform: scale(0.85); opacity: 0.7; }
+  to   { transform: scale(1.1);  opacity: 1; }
+}
+
+.mv-goal-content {
+  position: relative;
+  text-align: center;
+  padding: 28px 48px 24px;
+  background: linear-gradient(160deg, #1a0a0a, #2a1000);
+  border: 2px solid rgba(255, 160, 20, 0.7);
+  border-radius: 12px;
+  box-shadow:
+    0 0 60px rgba(255, 160, 20, 0.5),
+    0 0 120px rgba(255, 100, 0, 0.25),
+    inset 0 1px 0 rgba(255,220,80,.15);
+}
+.mv-goal-label {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #ffe050;
+  text-shadow:
+    0 0 20px rgba(255,200,50,.9),
+    0 0 50px rgba(255,150,0,.6),
+    0 4px 8px rgba(0,0,0,.8);
+  line-height: 1;
+  animation: mv-goal-shake 0.4s ease-in-out 0.1s;
+}
+@keyframes mv-goal-shake {
+  0%,100% { transform: rotate(0deg) scale(1); }
+  20%      { transform: rotate(-3deg) scale(1.05); }
+  40%      { transform: rotate(3deg) scale(1.08); }
+  60%      { transform: rotate(-2deg) scale(1.05); }
+  80%      { transform: rotate(2deg) scale(1.02); }
+}
+.mv-goal-team {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+}
+.mv-goal-scorer {
+  margin-top: 6px;
+  font-size: 14px;
+  color: rgba(255,220,100,.8);
+  font-weight: 700;
+  letter-spacing: 1px;
 }

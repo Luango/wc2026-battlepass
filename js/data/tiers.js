@@ -4,7 +4,7 @@
 
 // Progressive XP curve — early levels are fast, ramps up to 500
 export function xpForLevel(lvl) {
-  const table = [0, 30, 50, 60, 80, 100, 130, 160, 200, 250, 300];
+  const table = [0, 20, 50, 60, 80, 100, 130, 160, 200, 250, 300];
   if (lvl >= 1 && lvl <= 10) return table[lvl];
   return Math.min(300 + (lvl - 10) * 30, 500);
 }

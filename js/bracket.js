@@ -90,11 +90,6 @@ function drawBracketSVG() {
   svg.style.left = (ir.left-br.left+body.scrollLeft) + 'px';
   svg.style.top = (ir.top-br.top+body.scrollTop) + 'px';
   svg.setAttribute('width', ir.width); svg.setAttribute('height', ir.height);
-  const center = inner.querySelector('.bkt-center');
-  if (center) {
-    const cx = center.offsetLeft + center.offsetWidth/2;
-    body.scrollLeft = cx - br.width/2;
-  }
   svg.innerHTML = '';
   const stroke = 'rgba(200,160,82,0.32)';
   function ln(x1,y1,x2,y2) {
