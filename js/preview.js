@@ -555,11 +555,55 @@ export function aiSendChat() {
   if (!aiChatHistory[mid]) aiChatHistory[mid] = [];
 
   aiChatHistory[mid].push({ from: 'ai-user', text: question });
-  const response = generateAIResponse(question, mid);
-  aiChatHistory[mid].push({ from: 'ai-bot', text: response });
-
   renderFloatingAIChat(mid);
   SFX.nav();
+
+  // Show typing indicator
+  const msgs = document.getElementById('ai-chat-messages');
+  if (!msgs) return;
+
+  const typingEl = document.createElement('div');
+  typingEl.className = 'ai-chat-msg ai-bot';
+  typingEl.id = 'ai-typing-indicator';
+  typingEl.innerHTML = `
+    <div class="ai-chat-avatar"><img src="img/blubo.svg" alt="Blubo" class="ai-avatar-img"></div>
+    <div class="ai-chat-bubble ai-typing-dots"><span>.</span><span>.</span><span>.</span><span>.</span></div>
+  `;
+  msgs.appendChild(typingEl);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // After 3s, replace with typewriter response
+  setTimeout(() => {
+    const response = generateAIResponse(question, mid);
+    aiChatHistory[mid].push({ from: 'ai-bot', text: response });
+
+    const indicator = document.getElementById('ai-typing-indicator');
+    if (indicator) indicator.remove();
+
+    const botEl = document.createElement('div');
+    botEl.className = 'ai-chat-msg ai-bot';
+    botEl.innerHTML = `
+      <div class="ai-chat-avatar"><img src="img/blubo.svg" alt="Blubo" class="ai-avatar-img"></div>
+      <div class="ai-chat-bubble" id="ai-typewriter-bubble"></div>
+    `;
+    msgs.appendChild(botEl);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    // Typewriter effect — strip HTML tags for iteration, then reveal innerHTML gradually
+    const bubble = document.getElementById('ai-typewriter-bubble');
+    if (!bubble) return;
+    let i = 0;
+    const speed = 18; // ms per character
+    function typeNext() {
+      if (i <= response.length) {
+        bubble.innerHTML = response.slice(0, i);
+        i++;
+        msgs.scrollTop = msgs.scrollHeight;
+        setTimeout(typeNext, speed);
+      }
+    }
+    typeNext();
+  }, 3000);
 }
 
 function removeFloatingAIChat() {
