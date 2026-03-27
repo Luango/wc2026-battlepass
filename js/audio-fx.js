@@ -175,5 +175,115 @@ export const SFX=(()=>{
         },i*45);
       }
     });},
+    // Gift box wobble — anticipation rattle
+    giftShake(){play(c=>{
+      for(let i=0;i<8;i++){
+        setTimeout(()=>{
+          tone(c,300+Math.random()*200,.03,'square',.04+i*.005,.03);
+          if(i%2===0)noise(c,.02,.02);
+        },i*60);
+      }
+    });},
+    // Gift lid pop — explosive burst
+    giftPop(){play(c=>{
+      noise(c,.15,.15);
+      tone(c,200,.1,'sawtooth',.2,.1);
+      tone(c,400,.08,'square',.15,.08);
+      setTimeout(()=>{
+        tone(c,800,.06,'sine',.12,.06);
+        tone(c,1200,.06,'sine',.1,.06);
+        noise(c,.08,.1);
+      },60);
+      setTimeout(()=>{
+        tone(c,1600,.1,'sine',.08,.1);
+        tone(c,2400,.08,'sine',.06,.08);
+      },120);
+    });},
+    // Light burst whoosh — sweeping reveal
+    revealWhoosh(){play(c=>{
+      // Low sweep
+      const o=c.createOscillator(),g=c.createGain();
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(100,c.currentTime);
+      o.frequency.exponentialRampToValueAtTime(2000,c.currentTime+.4);
+      g.gain.setValueAtTime(.08,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.5);
+      o.connect(g);g.connect(c.destination);
+      o.start();o.stop(c.currentTime+.5);
+      // White noise swell
+      noise(c,.3,.08);
+      setTimeout(()=>noise(c,.15,.04),150);
+    });},
+    // Reward rise — magical ascending shimmer
+    rewardRise(){play(c=>{
+      const notes=[523,659,784,1047,1319,1568];
+      notes.forEach((f,i)=>{
+        setTimeout(()=>{
+          tone(c,f,.12+(i*.02),'sine',.06+i*.01,.12+i*.02);
+          if(i%2===0)tone(c,f*1.5,.06,'sine',.03,.06);
+        },i*55);
+      });
+      setTimeout(()=>{
+        noise(c,.1,.04);
+        tone(c,1568,.3,'sine',.08,.3);
+        tone(c,2093,.25,'sine',.06,.25);
+      },330);
+    });},
+    // Legendary mega fanfare — multi-layered epic
+    legendaryReveal(){play(c=>{
+      // Thunder hit
+      noise(c,.2,.18);
+      tone(c,80,.2,'sawtooth',.15,.2);
+      // Dramatic pause then ascending power chord
+      setTimeout(()=>{
+        [261,329,392].forEach(f=>tone(c,f,.4,'sine',.12,.4));
+        noise(c,.05,.06);
+      },250);
+      setTimeout(()=>{
+        [329,415,523].forEach(f=>tone(c,f,.4,'sine',.14,.4));
+        noise(c,.06,.06);
+      },500);
+      setTimeout(()=>{
+        [392,523,659,784].forEach((f,i)=>{
+          setTimeout(()=>tone(c,f,.5+i*.08,'sine',.12+i*.02,.5+i*.08),i*50);
+        });
+        setTimeout(()=>{
+          [784,1047,1319,1568].forEach(f=>tone(c,f,.6,'sine',.1,.6));
+          noise(c,.25,.08);
+        },200);
+      },750);
+    });},
+    // Epic reveal — powerful but slightly shorter
+    epicReveal(){play(c=>{
+      noise(c,.12,.12);
+      tone(c,150,.15,'sawtooth',.12,.15);
+      setTimeout(()=>{
+        [392,523,659].forEach(f=>tone(c,f,.35,'sine',.1,.35));
+        noise(c,.06,.05);
+      },180);
+      setTimeout(()=>{
+        [523,659,784,1047].forEach((f,i)=>{
+          setTimeout(()=>tone(c,f,.4,'sine',.1+i*.015,.4),i*45);
+        });
+        noise(c,.15,.06);
+      },450);
+    });},
+    // Coin shower — long cascading coins for collection
+    coinShower(){play(c=>{
+      for(let i=0;i<16;i++){
+        setTimeout(()=>{
+          tone(c,1800+Math.random()*2000,.05,'square',.04+Math.random()*.03,.05);
+          if(i%3===0)noise(c,.02,.02);
+        },i*50+Math.random()*30);
+      }
+    });},
+    // Magic sparkle — twinkling fairy dust
+    sparkle(){play(c=>{
+      for(let i=0;i<5;i++){
+        setTimeout(()=>{
+          tone(c,2000+Math.random()*2500,.08,'sine',.03+Math.random()*.02,.08);
+        },i*80+Math.random()*40);
+      }
+    });},
   };
 })();

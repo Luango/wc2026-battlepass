@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // UTILS — Toast, debug, helpers
 // ═══════════════════════════════════════════════════════════
-import { animateElement } from './visual-fx.js';
+import { animateElement } from './visual-fx.js?v=9';
 
 export function clamp(v, min, max) {
   return Math.max(min, Math.min(max, v));

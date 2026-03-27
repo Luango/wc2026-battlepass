@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node --check js/simulation.js)",
+      "Bash(node --check js/preview.js)",
+      "Bash(node --check js/player-stats.js)",
+      "Bash(node --check js/main.js)",
+      "Bash(node --check js/audio-fx.js)",
+      "Bash(where npx:*)",
+      "Bash(where node:*)",
+      "Bash(where python:*)",
+      "Bash(node -c js/render.js)",
+      "Bash(node -c \"js/betting/bet-actions.js\")",
+      "Bash(node -c \"js/betting/odds.js\")",
+      "Bash(node -c \"js/betting/settlement.js\")",
+      "Bash(grep -n \"tab === ''starting11''\\\\|tab === ''mvp''\" \"C:\\\\Users\\\\Ang Lu\\\\ClaudeJam2\\\\js\\\\render.js\")",
+      "Bash(node -c js/preview.js)",
+      "Bash(node -c js/main.js)",
+      "Bash(node -c js/state.js)",
+      "Bash(grep -r \"formation\\\\|scorer\\\\|starting11\\\\|mvp\" js/*.js)",
+      "Bash(curl -s http://localhost:8080/wc2026-battlepass.html)"
+    ]
+  }
+}

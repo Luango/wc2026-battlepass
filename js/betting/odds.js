@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // BETTING ODDS — All odds calculation functions
 // ═══════════════════════════════════════════════════════════
-import { state } from '../state.js';
-import { T } from '../data/teams.js';
-import { genSquad } from '../data/squads.js';
+import { state } from '../state.js?v=9';
+import { T } from '../data/teams.js?v=9';
+import { genSquad } from '../data/squads.js?v=9';
 
 export function calcOdds(hs,as){
   const tot=hs+as,hp=(hs/tot)*.82+.07,ap=(as/tot)*.82+.07;
@@ -70,6 +70,25 @@ export function calcExactScoreOdds(hs,as){
   }
   return scores.sort((a,b)=>a.odds-b.odds).slice(0,12);
 }
+// ── FORMATION BET ────────────────────────────────────────
+// Player bets which team's formation (from the draft board) performs better
+import { FORMATION_PROFILE } from '../data/formations.js?v=9';
+export function calcFormationOdds(hs,as,hForm,aForm){
+  const hProf=FORMATION_PROFILE[hForm]||{atk:0,mid:0,def:0};
+  const aProf=FORMATION_PROFILE[aForm]||{atk:0,mid:0,def:0};
+  // Each formation has atk/mid/def bonuses — combine with team strength
+  const hScore=hs + hProf.atk*2 + hProf.mid*1.5 + hProf.def*1;
+  const aScore=as + aProf.atk*2 + aProf.mid*1.5 + aProf.def*1;
+  const tot=hScore+aScore;
+  const hP=hScore/tot, aP=aScore/tot;
+  const e=0.88;
+  return{
+    home:+(Math.max(1.15,1/(hP*e)).toFixed(2)),
+    away:+(Math.max(1.15,1/(aP*e)).toFixed(2)),
+    homeForm:hForm, awayForm:aForm
+  };
+}
+
 export function calcGoalscorerOdds(mid){
   const m=state.MS.find(x=>x.id===mid);if(!m)return[];
   const hSq=genSquad(m.home),aSq=genSquad(m.away);
@@ -86,4 +105,32 @@ export function calcGoalscorerOdds(mid){
   };
   addPlayers(hSq,m.home);addPlayers(aSq,m.away);
   return out.sort((a,b)=>a.odds-b.odds);
+}
+
+// ── STARTING XI BET ──────────────────────────────────────────
+// Odds for each player to be in the starting 11
+export function calcStartingXIOdds(mid,side){
+  const m=state.MS.find(x=>x.id===mid);if(!m)return[];
+  const tid=side==='home'?m.home:m.away;
+  const sq=genSquad(tid);
+  // First 11 are typically starters; higher rating = more likely starter
+  return sq.map((pl,idx)=>{
+    const starterChance=(100-idx*2.5)/100;
+    const odds=Math.max(1.15,1/(Math.min(.95,pl.r/100*0.8+0.15))).toFixed(2);
+    return{name:pl.n,rating:pl.r,pos:pl.p,odds:+odds,idx};
+  }).sort((a,b)=>+a.odds-+b.odds);
+}
+
+// ── MVP BET ──────────────────────────────────────────────────
+// Odds for each player to be MVP (player of the match)
+export function calcMVPOdds(mid,side){
+  const m=state.MS.find(x=>x.id===mid);if(!m)return[];
+  const tid=side==='home'?m.home:m.away;
+  const sq=genSquad(tid);
+  // Field players only; higher rating = better MVP odds
+  return sq.filter(pl=>pl.p!=='GK').map(pl=>{
+    const baseOdds=pl.p==='FWD'?1.5:pl.p==='MID'?2.5:4.5;
+    const odds=Math.max(1.2,(baseOdds+(100-pl.r)*.008)).toFixed(2);
+    return{name:pl.n,rating:pl.r,pos:pl.p,odds:+odds};
+  }).sort((a,b)=>+a.odds-+b.odds);
 }

@@ -1,21 +1,19 @@
 // ═══════════════════════════════════════════════════════════
 // RENDER — Core UI rendering functions
 // ═══════════════════════════════════════════════════════════
-import { state, BET_TYPES } from './state.js';
-import { PHASES } from './data/phases.js';
-import { TIER_REWARDS, RARITY } from './data/tiers.js';
-import { T, flagImg } from './data/teams.js';
-import { calcOdds, calcSpreadOdds, calcTotalOdds, calcBttsOdds,
-         calcDoubleChanceOdds, calcDrawNoBetOdds, calcExactScoreOdds,
-         calcGoalscorerOdds } from './betting/odds.js';
-import { betPickLabel } from './betting/bet-actions.js';
-import { getAllMatchDays, setActiveDay } from './calendar.js';
+import { state, BET_TYPES } from './state.js?v=9';
+import { PHASES } from './data/phases.js?v=9';
+import { TIER_REWARDS, RARITY, getLevelProgress } from './data/tiers.js?v=9';
+import { T, flagImg } from './data/teams.js?v=9';
+import { calcOdds, calcTotalOdds, calcBttsOdds } from './betting/odds.js?v=9';
+import { betPickLabel } from './betting/bet-actions.js?v=9';
+import { getAllMatchDays, setActiveDay } from './calendar.js?v=9';
+import { getAIVerdict, getAIConfidence } from './ai-system.js?v=9';
 
-// Inline level progress calc
-const XP_PER_LVL = 500;
+// Progressive level progress calc
 function levelProg() {
-  const c = state.ST.xp % XP_PER_LVL;
-  return { c, max: XP_PER_LVL, pct: c / XP_PER_LVL * 100 };
+  const prog = getLevelProgress(state.ST.xp);
+  return { c: prog.current, max: prog.max, pct: prog.pct };
 }
 
 // ── UPDATE ALL ─────────────────────────────────────────────
@@ -163,10 +161,14 @@ export function renderCalendarHUD() {
       if (hasBets) cls += ' has-bets';
 
       const shortDate = d.date.replace(/\s+/g, ' ');
-      html += `<div class="${cls}" onclick="setActiveDay('${d.key}')" title="${shortDate}">
+      const matchCount = dm.length;
+      const settledCount = dm.filter(m => m.status === 'settled').length;
+      const matchLabel = matchCount === 0 ? '' : settledCount === matchCount ? `${matchCount}✓` : `${matchCount}m`;
+
+      html += `<div class="${cls}" onclick="setActiveDay('${d.key}')" data-daykey="${d.key}" data-daynum="${i+1}">
         <div class="day-pill-num">${i + 1}</div>
         <div class="day-pill-date">${shortDate}</div>
-        <div class="day-pill-dot"></div>
+        ${matchLabel ? `<div class="day-pill-matches">${matchLabel}</div>` : '<div class="day-pill-dot"></div>'}
       </div>`;
     });
     strip.innerHTML = html;
@@ -176,6 +178,110 @@ export function renderCalendarHUD() {
     if (activePill) {
       activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
+
+    // Hover tooltip
+    initDayPillTooltips(strip);
+  }
+}
+
+// ── Day pill hover tooltip ──
+let _dayTooltip = null;
+let _dayTooltipTimeout = null;
+
+function initDayPillTooltips(strip) {
+  strip.addEventListener('mouseover', (e) => {
+    const pill = e.target.closest('.day-pill');
+    if (!pill) return;
+    clearTimeout(_dayTooltipTimeout);
+    _dayTooltipTimeout = setTimeout(() => showDayTooltip(pill), 100);
+  });
+  strip.addEventListener('mouseout', (e) => {
+    const pill = e.target.closest('.day-pill');
+    const related = e.relatedTarget;
+    if (related && related.closest('.day-pill') === pill) return;
+    clearTimeout(_dayTooltipTimeout);
+    hideDayTooltip();
+  });
+}
+
+function showDayTooltip(pill) {
+  hideDayTooltip();
+
+  const dayKey = pill.dataset.daykey;
+  const dayNum = pill.dataset.daynum;
+  const dm = state.MS.filter(m => m.dateKey === dayKey && m.home !== 'TBD');
+  const allDone = dm.length > 0 && dm.every(m => m.status === 'settled');
+  const anyMatch = state.MS.find(m => m.dateKey === dayKey);
+  const ph = anyMatch ? PHASES.find(p => p.id === anyMatch.phaseId) : null;
+
+  let matchesHtml = '';
+  if (dm.length === 0) {
+    matchesHtml = '<div class="dpt-no-matches">No matches this day</div>';
+  } else {
+    dm.forEach(m => {
+      const hTeam = T[m.home];
+      const aTeam = T[m.away];
+      const hName = hTeam?.name || m.home;
+      const aName = aTeam?.name || m.away;
+      const hFlag = flagImg(m.home, 'dpt-flag');
+      const aFlag = flagImg(m.away, 'dpt-flag');
+
+      if (m.status === 'settled') {
+        matchesHtml += `<div class="dpt-match">
+          ${hFlag}<div class="dpt-team">${hName}</div>
+          <div class="dpt-score">${m.homeGoals}–${m.awayGoals}</div>
+          <div class="dpt-team dpt-away">${aName}</div>${aFlag}
+        </div>`;
+      } else {
+        matchesHtml += `<div class="dpt-match">
+          ${hFlag}<div class="dpt-team">${hName}</div>
+          <div class="dpt-vs">VS</div>
+          <div class="dpt-team dpt-away">${aName}</div>${aFlag}
+        </div>`;
+      }
+    });
+  }
+
+  const statusHtml = dm.length === 0 ? '' :
+    allDone ? '<div class="dpt-status dpt-status-done">ALL SETTLED</div>' :
+    `<div class="dpt-status dpt-status-pending">${dm.filter(m=>m.status==='pending').length} PENDING</div>`;
+
+  const tooltip = document.createElement('div');
+  tooltip.className = 'day-pill-tooltip';
+  tooltip.innerHTML = `<div class="dpt-inner">
+    <div class="dpt-header">
+      <span class="dpt-day">DAY ${dayNum}</span>
+      <span class="dpt-date">${anyMatch?.date || dayKey}</span>
+    </div>
+    ${ph ? `<div class="dpt-phase">${ph.label}</div>` : ''}
+    ${matchesHtml}
+    ${statusHtml}
+  </div>`;
+
+  document.body.appendChild(tooltip);
+
+  // Position below the pill
+  const rect = pill.getBoundingClientRect();
+  const tRect = tooltip.getBoundingClientRect();
+  let left = rect.left + rect.width / 2 - tRect.width / 2;
+  let top = rect.bottom + 8;
+
+  // Clamp to viewport
+  if (left < 8) left = 8;
+  if (left + tRect.width > window.innerWidth - 8) left = window.innerWidth - 8 - tRect.width;
+  if (top + tRect.height > window.innerHeight - 8) top = rect.top - tRect.height - 8;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+
+  requestAnimationFrame(() => tooltip.classList.add('dpt-visible'));
+  _dayTooltip = tooltip;
+}
+
+function hideDayTooltip() {
+  if (_dayTooltip) {
+    _dayTooltip.remove();
+    _dayTooltip = null;
   }
 }
 
@@ -259,6 +365,21 @@ function mc(m) {
     <span>${odds.away}<span class="qlbl">2</span></span>
   </div>`;
 
+  // AI verdict badge for pending matches
+  let aiBadge = '';
+  if (!done) {
+    const verdict = getAIVerdict(m.id);
+    if (verdict) {
+      const confClass = verdict.confidence >= 55 ? 'conf-strong' : verdict.confidence >= 40 ? 'conf-lean' : 'conf-neutral';
+      aiBadge = `<div class="mc-ai-badge">
+        <span class="mc-ai-icon">🤖</span>
+        <span class="mc-ai-pick">AI: ${verdict.label}</span>
+        <span class="mc-ai-conf ${confClass}">${verdict.confidence}%</span>
+        ${verdict.valueBet ? `<span class="mc-ai-value">💡 ${verdict.valueBet}</span>` : ''}
+      </div>`;
+    }
+  }
+
   let betStatus = '';
   if (bet) {
     const col = bet.status==='won'?'var(--green)':bet.status==='lost'?'var(--red)':'var(--gold)';
@@ -278,7 +399,7 @@ function mc(m) {
         <div class="mc-team away ${aClass}"><span class="flag">${flagImg(m.away)}</span><div class="tname">${a.name}</div></div>
       </div>
     </div>
-    ${quickOdds}${betStatus}
+    ${quickOdds}${aiBadge}${betStatus}
   </div>`;
 }
 
@@ -292,83 +413,41 @@ export function renderBetOpts(m, h, a, bet, done) {
       c += done ? (bet.status==='won'?' win':bet.status==='push'?' push-bet':' lose') : ' sel';
     return c;
   };
+  // AI confidence dot helper
+  const aiDot = (pick) => {
+    if (done || bet) return '';
+    const ai = getAIConfidence(mid, tab, pick);
+    if (ai.level === 'neutral') return '';
+    return `<div class="ai-conf-dot ${ai.level === 'strong' ? 'conf-strong' : 'conf-lean'}" title="AI: ${ai.pct}% confidence">● ${ai.pct}%</div>`;
+  };
 
   if (tab === 'match') {
     const odds = calcOdds(h.str, a.str);
     return `<div class="bopts">
       <div class="${boc('home')}" onclick="pickOpt(event,${mid},'home',this)">
-        <div class="odds">${odds.home}x</div><div class="olbl">${h.name}</div></div>
+        ${aiDot('home')}<div class="odds">${odds.home}x</div><div class="olbl">${h.name}</div></div>
       <div class="${boc('draw')}" onclick="pickOpt(event,${mid},'draw',this)">
-        <div class="odds">${odds.draw}x</div><div class="olbl">Draw</div></div>
+        ${aiDot('draw')}<div class="odds">${odds.draw}x</div><div class="olbl">Draw</div></div>
       <div class="${boc('away')}" onclick="pickOpt(event,${mid},'away',this)">
-        <div class="odds">${odds.away}x</div><div class="olbl">${a.name}</div></div>
-    </div>`;
-  }
-  if (tab === 'spread') {
-    const so = calcSpreadOdds(h.str, a.str);
-    return `<div class="bopts cols2">
-      <div class="${boc('home_spread')}" onclick="pickOpt(event,${mid},'home_spread',this)">
-        <div class="odds">${so.home}x</div><div class="olbl">${h.name} ${so.homeLine}</div></div>
-      <div class="${boc('away_spread')}" onclick="pickOpt(event,${mid},'away_spread',this)">
-        <div class="odds">${so.away}x</div><div class="olbl">${a.name} +${so.awayLine}</div></div>
+        ${aiDot('away')}<div class="odds">${odds.away}x</div><div class="olbl">${a.name}</div></div>
     </div>`;
   }
   if (tab === 'totals') {
     const to = calcTotalOdds(h.str, a.str);
     return `<div class="bopts cols2">
       <div class="${boc('over')}" onclick="pickOpt(event,${mid},'over',this)">
-        <div class="odds">${to.over}x</div><div class="olbl">Over ${to.line}</div></div>
+        ${aiDot('over')}<div class="odds">${to.over}x</div><div class="olbl">Over ${to.line}</div></div>
       <div class="${boc('under')}" onclick="pickOpt(event,${mid},'under',this)">
-        <div class="odds">${to.under}x</div><div class="olbl">Under ${to.line}</div></div>
+        ${aiDot('under')}<div class="odds">${to.under}x</div><div class="olbl">Under ${to.line}</div></div>
     </div>`;
   }
   if (tab === 'btts') {
     const bo = calcBttsOdds(h.str, a.str);
     return `<div class="bopts cols2">
       <div class="${boc('btts_yes')}" onclick="pickOpt(event,${mid},'btts_yes',this)">
-        <div class="odds">${bo.yes}x</div><div class="olbl">Both Score — Yes</div></div>
+        ${aiDot('btts_yes')}<div class="odds">${bo.yes}x</div><div class="olbl">Both Score — Yes</div></div>
       <div class="${boc('btts_no')}" onclick="pickOpt(event,${mid},'btts_no',this)">
-        <div class="odds">${bo.no}x</div><div class="olbl">Both Score — No</div></div>
-    </div>`;
-  }
-  if (tab === 'double') {
-    const dc = calcDoubleChanceOdds(h.str, a.str);
-    return `<div class="bopts">
-      <div class="${boc('home_draw')}" onclick="pickOpt(event,${mid},'home_draw',this)">
-        <div class="odds">${dc.home_draw}x</div><div class="olbl">${h.name} or Draw</div></div>
-      <div class="${boc('away_draw')}" onclick="pickOpt(event,${mid},'away_draw',this)">
-        <div class="odds">${dc.away_draw}x</div><div class="olbl">${a.name} or Draw</div></div>
-      <div class="${boc('home_away')}" onclick="pickOpt(event,${mid},'home_away',this)">
-        <div class="odds">${dc.home_away}x</div><div class="olbl">${h.name} or ${a.name}</div></div>
-    </div>`;
-  }
-  if (tab === 'dnb') {
-    const dnb = calcDrawNoBetOdds(h.str, a.str);
-    return `<div class="bopts cols2">
-      <div class="${boc('dnb_home')}" onclick="pickOpt(event,${mid},'dnb_home',this)">
-        <div class="odds">${dnb.home}x</div><div class="olbl">${h.name}</div>
-        <div class="olbl-detail">Push on Draw</div></div>
-      <div class="${boc('dnb_away')}" onclick="pickOpt(event,${mid},'dnb_away',this)">
-        <div class="odds">${dnb.away}x</div><div class="olbl">${a.name}</div>
-        <div class="olbl-detail">Push on Draw</div></div>
-    </div>`;
-  }
-  if (tab === 'exact') {
-    const es = calcExactScoreOdds(h.str, a.str);
-    return `<div class="bopts score-grid">
-      ${es.map(s => `<div class="${boc('es_'+s.h+'_'+s.a)}" onclick="pickOpt(event,${mid},'es_${s.h}_${s.a}',this)">
-        <div class="odds-sm">${s.odds}x</div><div class="olbl">${s.h}–${s.a}</div>
-      </div>`).join('')}
-    </div>`;
-  }
-  if (tab === 'scorer') {
-    const gs = calcGoalscorerOdds(mid);
-    return `<div class="bopts scorer-list">
-      ${gs.map(p => `<div class="${boc('gs_'+p.name)}" onclick="pickOpt(event,${mid},'gs_${p.name.replace(/'/g,"\\'")}',this)">
-        <div class="odds-sm">${p.odds}x</div><div class="olbl">${p.name}</div>
-        <div class="scorer-pos ${p.pos.toLowerCase()}">${p.pos}</div>
-        <div class="olbl-detail">${T[p.team]?.name||p.team}</div>
-      </div>`).join('')}
+        ${aiDot('btts_no')}<div class="odds">${bo.no}x</div><div class="olbl">Both Score — No</div></div>
     </div>`;
   }
   return '';
@@ -376,9 +455,13 @@ export function renderBetOpts(m, h, a, bet, done) {
 
 // ── RIGHT PANEL ────────────────────────────────────────────
 export function renderRightPanel() {
-  const bets = Object.entries(state.ST.bets);
-  const pending = bets.filter(([,b]) => b.status === 'pending');
-  const settled = bets.filter(([,b]) => b.status !== 'pending').slice(-6).reverse();
+  const allBets = [];
+  Object.entries(state.ST.bets).forEach(([mid,betsOrBet]) => {
+    const betsArr = Array.isArray(betsOrBet) ? betsOrBet : (betsOrBet ? [betsOrBet] : []);
+    betsArr.forEach(b => allBets.push([mid,b]));
+  });
+  const pending = allBets.filter(([,b]) => b.status === 'pending');
+  const settled = allBets.filter(([,b]) => b.status !== 'pending').slice(-6).reverse();
 
   const typeTag = (b) => {
     const t = BET_TYPES.find(x => x.id === (b.type||'match'));

@@ -4,17 +4,18 @@
   100%{transform:translate(-50%,-50%) scale(3.5);opacity:0}
 }
 @keyframes pulse-gold{
-  0%,100%{box-shadow:0 0 0 0 rgba(200,160,82,0)}
-  50%{box-shadow:0 0 0 8px rgba(200,160,82,.25)}
+  0%,100%{box-shadow:0 0 0 0 rgba(255,51,51,0)}
+  50%{box-shadow:0 0 0 8px rgba(255,51,51,.22)}
 }
 @keyframes pulse-green{
-  0%,100%{box-shadow:0 0 0 0 rgba(90,170,94,0)}
-  50%{box-shadow:0 0 0 12px rgba(90,170,94,.25)}
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
+  50%{box-shadow:0 0 0 12px rgba(34,197,94,.25)}
 }
 @keyframes pulse-red{
-  0%,100%{box-shadow:0 0 0 0 rgba(201,68,68,0)}
-  50%{box-shadow:0 0 0 10px rgba(201,68,68,.2)}
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}
+  50%{box-shadow:0 0 0 10px rgba(239,68,68,.2)}
 }
+
 @keyframes shake{
   0%,100%{transform:translateX(0)}
   15%{transform:translateX(-6px)}
@@ -29,14 +30,15 @@
   100%{transform:scale(1);filter:brightness(1)}
 }
 @keyframes glow-in{
-  0%{box-shadow:0 0 0 0 rgba(200,160,82,0);transform:scale(1)}
-  50%{box-shadow:0 0 18px 4px rgba(200,160,82,.4);transform:scale(1.04)}
-  100%{box-shadow:0 0 0 0 rgba(200,160,82,0);transform:scale(1)}
+  0%{box-shadow:0 0 0 0 rgba(255,51,51,0);transform:scale(1)}
+  50%{box-shadow:0 0 18px 4px rgba(255,51,51,.38);transform:scale(1.04)}
+  100%{box-shadow:0 0 0 0 rgba(255,51,51,0);transform:scale(1)}
 }
 @keyframes flash-green{
-  0%{background:rgba(90,170,94,.5)}
+  0%{background:rgba(34,197,94,.5)}
   100%{background:transparent}
 }
+
 /* Compare overlay animations */
 @keyframes cmp-card-enter{
   0%{transform:scale(.85) translateY(20px);opacity:0}
@@ -61,7 +63,7 @@
   100%{transform:translateX(-50%) translateY(0);opacity:1}
 }
 @keyframes flash-red{
-  0%{background:rgba(201,68,68,.4)}
+  0%{background:rgba(239,68,68,.4)}
   100%{background:transparent}
 }
 @keyframes confetti-fall{
@@ -78,7 +80,7 @@
   100%{transform:translateY(0);opacity:1}
 }
 @keyframes odds-flash{
-  0%{color:var(--gold-light);text-shadow:0 0 12px rgba(240,200,112,.8)}
+  0%{color:var(--gold-light);text-shadow:0 0 12px rgba(255,51,51,.8)}
   100%{color:var(--gold-light);text-shadow:none}
 }
 @keyframes stamp{
@@ -87,7 +89,7 @@
   100%{transform:scale(1);opacity:1}
 }
 .anim-ripple{position:absolute;width:40px;height:40px;border-radius:50%;
-  background:radial-gradient(circle,rgba(200,160,82,.45),transparent 70%);
+  background:radial-gradient(circle,rgba(255,51,51,.45),transparent 70%);
   pointer-events:none;z-index:999;animation:ripple .5s ease-out forwards}
 .anim-pulse-gold{animation:pulse-gold .6s ease}
 .anim-pulse-green{animation:pulse-green .8s ease}
@@ -126,29 +128,29 @@
 
 /* ── Tier grid upgrade ── */
 .tier-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-.tier-cell{position:relative;background:rgba(0,0,0,.4);border:1px solid rgba(200,160,82,.08);
+.tier-cell{position:relative;background:rgba(0,0,0,.4);border:1px solid rgba(220,50,50,.08);
   border-radius:3px;padding:5px 3px 4px;text-align:center;cursor:pointer;
   transition:all .2s;overflow:hidden;min-height:52px;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:1px}
 .tier-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)}
-.tier-cell:hover{transform:translateY(-1px);border-color:rgba(200,160,82,.3)}
+.tier-cell:hover{transform:translateY(-1px);border-color:rgba(220,50,50,.28)}
 .tier-cell.locked{opacity:.45;cursor:default}
 .tier-cell.locked:hover{transform:none}
-.tier-cell.unlocked{border-color:rgba(200,160,82,.4);background:rgba(200,160,82,.06)}
-.tier-cell.unlocked:hover{background:rgba(200,160,82,.12);box-shadow:0 0 12px rgba(200,160,82,.15)}
-.tier-cell.claimed{border-color:rgba(90,170,94,.3);background:rgba(90,170,94,.06)}
-.tier-cell.current{border-color:var(--gold);box-shadow:0 0 10px rgba(200,160,82,.3);
+.tier-cell.unlocked{border-color:rgba(220,50,50,.38);background:rgba(220,50,50,.06)}
+.tier-cell.unlocked:hover{background:rgba(220,50,50,.12);box-shadow:0 0 12px rgba(220,50,50,.14)}
+.tier-cell.claimed{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06)}
+.tier-cell.current{border-color:var(--accent-red);box-shadow:0 0 10px rgba(255,51,51,.28);
   animation:pulse-gold 1.5s infinite}
 .tier-cell.milestone{border-width:2px}
-.tier-cell .tc-num{font-size:7px;color:var(--muted);font-weight:700;letter-spacing:.5px}
+.tier-cell .tc-num{font-size:8px;color:var(--muted);font-weight:700;letter-spacing:.5px}
 .tier-cell .tc-icon{font-size:16px;line-height:1;margin:1px 0}
 .tier-cell .tc-rarity{width:80%;height:2px;border-radius:1px;margin-top:1px}
-.tier-cell .tc-claim{position:absolute;inset:0;background:rgba(200,160,82,.15);
+.tier-cell .tc-claim{position:absolute;inset:0;background:rgba(220,50,50,.14);
   display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;
-  font-size:8px;font-weight:900;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase}
+  font-size:9px;font-weight:900;color:var(--gold-light);letter-spacing:1px;text-transform:uppercase}
 .tier-cell.unlocked:hover .tc-claim{opacity:1}
-.tier-cell .tc-check{position:absolute;top:2px;right:3px;font-size:8px;color:var(--green)}
+.tier-cell .tc-check{position:absolute;top:2px;right:3px;font-size:9px;color:var(--green)}
 
 /* ── Reward overlay ── */
 #reward-overlay{position:fixed;inset:0;z-index:10000;display:none;
@@ -163,36 +165,36 @@
 
 .reward-front,.reward-back{backface-visibility:hidden;border-radius:8px;
   border:2px solid var(--border-hi);overflow:hidden}
-.reward-front{background:linear-gradient(145deg,#12182a,#0a0e18);padding:40px 20px;
+.reward-front{background:linear-gradient(145deg,#1a1228,#0c0814);padding:40px 20px;
   text-align:center;position:relative}
 .reward-front::before{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(200,160,82,.02) 10px,rgba(200,160,82,.02) 20px)}
-.reward-front .rf-tier{font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(220,50,50,.02) 10px,rgba(220,50,50,.02) 20px)}
+.reward-front .rf-tier{font-size:12px;letter-spacing:3px;text-transform:uppercase;
   color:var(--gold);margin-bottom:12px;font-weight:900}
 .reward-front .rf-q{font-size:44px;line-height:1;margin-bottom:8px;opacity:.85;
   animation:reward-pulse 1.5s ease infinite}
-.reward-front .rf-hint{font-size:10px;color:var(--muted);letter-spacing:1px}
+.reward-front .rf-hint{font-size:11px;color:var(--muted);letter-spacing:1px}
 
 .reward-back{position:absolute;top:0;left:0;right:0;transform:rotateY(180deg);
   text-align:center;padding:24px 20px}
-.reward-back .rb-rarity{font-size:9px;font-weight:900;letter-spacing:2.5px;
+.reward-back .rb-rarity{font-size:10px;font-weight:900;letter-spacing:2.5px;
   text-transform:uppercase;margin-bottom:4px}
 .reward-back .rb-icon{font-size:56px;line-height:1;margin:10px 0 8px;
   filter:drop-shadow(0 0 16px var(--rw-glow))}
 .reward-back .rb-name{font-size:16px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:3px}
-.reward-back .rb-type{font-size:9px;color:var(--muted);letter-spacing:1.5px;
+.reward-back .rb-type{font-size:10px;color:var(--muted);letter-spacing:1.5px;
   text-transform:uppercase;margin-bottom:10px}
-.reward-back .rb-desc{font-size:11px;color:rgba(200,200,200,.7);line-height:1.5;
+.reward-back .rb-desc{font-size:12px;color:rgba(200,200,200,.7);line-height:1.5;
   margin-bottom:14px;font-style:italic}
 .reward-back .rb-chips{font-size:13px;font-weight:900;color:var(--gold-light);
   margin-bottom:10px}
-.reward-back .rb-collect{background:linear-gradient(180deg,#d4a843,#a87c28);color:#1a0f00;
-  border:1px solid #c8943a;padding:8px 28px;border-radius:3px;cursor:pointer;
+.reward-back .rb-collect{background:linear-gradient(135deg,#ff3333,#9333ea);color:#fff;
+  border:1px solid rgba(255,51,51,.6);padding:8px 28px;border-radius:3px;cursor:pointer;
   font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
   transition:all .15s;display:inline-block}
 .reward-back .rb-collect:hover{filter:brightness(1.15);transform:scale(1.03)}
 .reward-back .rb-collect:active{transform:scale(.96)}
-.reward-back .rb-already{font-size:10px;color:var(--green);font-weight:700;
+.reward-back .rb-already{font-size:11px;color:var(--green);font-weight:700;
   padding:6px 0;letter-spacing:1px}
 
 @keyframes reward-pulse{
@@ -214,45 +216,45 @@
 
 /* ── Inventory section ── */
 .inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:6px}
-.inv-item{background:rgba(0,0,0,.3);border:1px solid rgba(200,160,82,.08);
+.inv-item{background:rgba(0,0,0,.3);border:1px solid rgba(220,50,50,.08);
   border-radius:2px;padding:4px 2px;text-align:center;font-size:14px;
   position:relative;cursor:default;transition:all .15s}
-.inv-item:hover{border-color:rgba(200,160,82,.25);background:rgba(200,160,82,.04)}
-.inv-item .inv-name{font-size:6px;color:var(--muted);white-space:nowrap;overflow:hidden;
+.inv-item:hover{border-color:rgba(220,50,50,.22);background:rgba(220,50,50,.04)}
+.inv-item .inv-name{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis;margin-top:1px;line-height:1}
-.inv-empty{font-size:9px;color:var(--muted);text-align:center;padding:8px 0}
+.inv-empty{font-size:10px;color:var(--muted);text-align:center;padding:8px 0}
 
 /* ═══════════════════════════════════════════════════════════ */
 /* MATCH CARD — Settled state + animations                     */
 /* ═══════════════════════════════════════════════════════════ */
 
 /* Winner/loser team highlighting */
-.mc-team-winner .tname{color:#5aaa5e;text-shadow:0 0 8px rgba(90,170,94,.3);font-weight:900}
-.mc-team-winner .flag{filter:drop-shadow(0 0 4px rgba(90,170,94,.4))}
+.mc-team-winner .tname{color:#22c55e;text-shadow:0 0 8px rgba(34,197,94,.3);font-weight:900}
+.mc-team-winner .flag{filter:drop-shadow(0 0 4px rgba(34,197,94,.4))}
 .mc-team-loser .tname{color:var(--muted);opacity:.6}
 .mc-team-loser .flag{opacity:.55;filter:grayscale(.4)}
 
 /* Settled card left accent */
-.mc.mc-settled{border-left:3px solid rgba(90,170,94,.4)}
-.mc.mc-settled-draw{border-left:3px solid rgba(200,160,82,.3)}
+.mc.mc-settled{border-left:3px solid rgba(34,197,94,.4)}
+.mc.mc-settled-draw{border-left:3px solid rgba(220,50,50,.28)}
 
 /* Winner banner inside card */
-.mc-result-banner{font-size:8px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+.mc-result-banner{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
   padding:3px 8px;text-align:center}
-.mc-win-banner{background:linear-gradient(90deg,rgba(90,170,94,.15),rgba(90,170,94,.05));
-  color:#5aaa5e;border-bottom:1px solid rgba(90,170,94,.15)}
-.mc-draw-banner{background:linear-gradient(90deg,rgba(200,160,82,.1),rgba(200,160,82,.04));
-  color:var(--gold);border-bottom:1px solid rgba(200,160,82,.1)}
+.mc-win-banner{background:linear-gradient(90deg,rgba(34,197,94,.15),rgba(34,197,94,.05));
+  color:#22c55e;border-bottom:1px solid rgba(34,197,94,.15)}
+.mc-draw-banner{background:linear-gradient(90deg,rgba(220,50,50,.1),rgba(220,50,50,.04));
+  color:var(--gold);border-bottom:1px solid rgba(220,50,50,.1)}
 
 /* Bet status badges on cards */
-.mc-bet-won{background:rgba(90,170,94,.08);animation:pulse-green .8s ease}
-.mc-bet-lost{background:rgba(201,68,68,.06)}
+.mc-bet-won{background:rgba(34,197,94,.08);animation:pulse-green .8s ease}
+.mc-bet-lost{background:rgba(239,68,68,.06)}
 
 /* ── Just-settled animation (staggered on cards) ── */
 .mc-just-settled{animation:mc-settle-in .6s cubic-bezier(.17,.67,.35,1.2)}
-.mc-winner-flash{box-shadow:0 0 20px rgba(90,170,94,.35);border-color:rgba(90,170,94,.5) !important;
+.mc-winner-flash{box-shadow:0 0 20px rgba(34,197,94,.35);border-color:rgba(34,197,94,.5) !important;
   transition:box-shadow .8s ease, border-color .8s ease}
-.mc-draw-flash{box-shadow:0 0 15px rgba(200,160,82,.25);border-color:rgba(200,160,82,.4) !important;
+.mc-draw-flash{box-shadow:0 0 15px rgba(220,50,50,.22);border-color:rgba(220,50,50,.38) !important;
   transition:box-shadow .8s ease, border-color .8s ease}
 .mc-score-stamp{animation:mc-score-slam .5s cubic-bezier(.17,.67,.35,1.3)}
 
@@ -304,41 +306,41 @@
 
 /* ── Neutral theme (no bets) ── */
 .ro-neutral .ro-card{
-  background:linear-gradient(170deg,#0d1218,#0a0e16,#081018);
-  border:2px solid rgba(200,160,82,.3);
-  box-shadow:0 0 40px rgba(200,160,82,.08)}
+  background:linear-gradient(170deg,#0d1218,#0c0814,#081018);
+  border:2px solid rgba(220,50,50,.28);
+  box-shadow:0 0 40px rgba(220,50,50,.08)}
 .ro-neutral .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:radial-gradient(circle at 50% 60%,rgba(200,160,82,.06),transparent 60%);
+  background:radial-gradient(circle at 50% 60%,rgba(220,50,50,.06),transparent 60%);
   pointer-events:none;animation:ro-glow-pulse 2.5s ease infinite}
-.ro-neutral .ro-headline{color:var(--gold-light);text-shadow:0 0 15px rgba(200,160,82,.3)}
+.ro-neutral .ro-headline{color:var(--gold-light);text-shadow:0 0 15px rgba(220,50,50,.28)}
 
 /* ── Victory theme ── */
 .ro-victory .ro-card{
   background:linear-gradient(170deg,#0d1a0d,#0a1410,#081018);
-  border:2px solid rgba(90,170,94,.5);
-  box-shadow:0 0 60px rgba(90,170,94,.15),0 0 120px rgba(90,170,94,.05)}
+  border:2px solid rgba(34,197,94,.5);
+  box-shadow:0 0 60px rgba(34,197,94,.15),0 0 120px rgba(34,197,94,.05)}
 .ro-victory .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:radial-gradient(circle at 50% 60%,rgba(90,170,94,.1),transparent 55%);
+  background:radial-gradient(circle at 50% 60%,rgba(34,197,94,.1),transparent 55%);
   pointer-events:none;animation:ro-glow-pulse 2s ease infinite}
 
 /* ── Jackpot theme ── */
 .ro-jackpot .ro-card{
-  background:linear-gradient(170deg,#1a1500,#141008,#0a0e18);
-  border:2px solid rgba(240,200,112,.6);
-  box-shadow:0 0 80px rgba(240,200,112,.2),0 0 160px rgba(240,200,112,.08)}
+  background:linear-gradient(170deg,#1a1500,#141008,#0c0814);
+  border:2px solid rgba(255,51,51,.55);
+  box-shadow:0 0 80px rgba(255,51,51,.18),0 0 160px rgba(255,51,51,.08)}
 .ro-jackpot .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:radial-gradient(circle at 50% 60%,rgba(240,200,112,.15),transparent 50%);
+  background:radial-gradient(circle at 50% 60%,rgba(255,51,51,.14),transparent 50%);
   pointer-events:none;animation:ro-glow-pulse 1.5s ease infinite}
-.ro-jackpot .ro-headline{color:var(--gold-light);text-shadow:0 0 30px rgba(240,200,112,.6)}
-.ro-jackpot .ro-chips-num{color:var(--gold-light);text-shadow:0 0 20px rgba(240,200,112,.5)}
+.ro-jackpot .ro-headline{color:var(--gold-light);text-shadow:0 0 30px rgba(255,51,51,.55)}
+.ro-jackpot .ro-chips-num{color:var(--gold-light);text-shadow:0 0 20px rgba(255,51,51,.45)}
 
 /* ── Defeat theme ── */
 .ro-defeat .ro-card{
-  background:linear-gradient(170deg,#1a0d0d,#140a0a,#0a0e18);
-  border:2px solid rgba(201,68,68,.35);
-  box-shadow:0 0 40px rgba(201,68,68,.1)}
+  background:linear-gradient(170deg,#1a0d0d,#140a0a,#0c0814);
+  border:2px solid rgba(239,68,68,.35);
+  box-shadow:0 0 40px rgba(239,68,68,.1)}
 .ro-defeat .ro-glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:radial-gradient(circle at 50% 60%,rgba(201,68,68,.06),transparent 60%);
+  background:radial-gradient(circle at 50% 60%,rgba(239,68,68,.06),transparent 60%);
   pointer-events:none}
 
 @keyframes ro-glow-pulse{
@@ -347,13 +349,13 @@
 }
 
 /* ── Headline ── */
-.ro-headline-icon{font-size:52px;line-height:1;margin-bottom:6px;
+.ro-headline-icon{font-size:64px;line-height:1;margin-bottom:6px;
   animation:ro-icon-slam .6s cubic-bezier(.17,.67,.35,1.3) forwards}
-.ro-headline{font-size:24px;font-weight:900;letter-spacing:5px;
+.ro-headline{font-size:32px;font-weight:900;letter-spacing:5px;
   text-transform:uppercase;margin-bottom:6px;
   animation:ro-headline-in .5s .15s ease both}
-.ro-victory .ro-headline{color:#5aaa5e;text-shadow:0 0 20px rgba(90,170,94,.4)}
-.ro-defeat .ro-headline{color:var(--red);text-shadow:0 0 15px rgba(201,68,68,.3)}
+.ro-victory .ro-headline{color:#22c55e;text-shadow:0 0 20px rgba(34,197,94,.4)}
+.ro-defeat .ro-headline{color:var(--red);text-shadow:0 0 15px rgba(239,68,68,.3)}
 
 @keyframes ro-icon-slam{
   0%{transform:scale(3.5) rotate(-12deg);opacity:0;filter:blur(6px)}
@@ -369,10 +371,10 @@
 /* ── Chips display (win amount) ── */
 .ro-chips-display{display:flex;align-items:center;justify-content:center;gap:8px;
   margin:4px 0 10px;animation:ro-chips-in .6s .3s ease both}
-.ro-chips-icon{font-size:28px;animation:ro-coin-spin 1s .4s ease both}
-.ro-chips-num{font-size:38px;font-weight:900;font-variant-numeric:tabular-nums;
-  color:#5aaa5e;text-shadow:0 0 20px rgba(90,170,94,.4)}
-.ro-net-neg .ro-chips-num{color:var(--red);text-shadow:0 0 15px rgba(201,68,68,.3)}
+.ro-chips-icon{font-size:36px;animation:ro-coin-spin 1s .4s ease both}
+.ro-chips-num{font-size:48px;font-weight:900;font-variant-numeric:tabular-nums;
+  color:#22c55e;text-shadow:0 0 20px rgba(34,197,94,.4)}
+.ro-net-neg .ro-chips-num{color:var(--red);text-shadow:0 0 15px rgba(239,68,68,.3)}
 
 @keyframes ro-chips-in{
   0%{transform:scale(.5) translateY(15px);opacity:0}
@@ -403,41 +405,41 @@
 .ro-flag{flex-shrink:0;display:flex;align-items:center}
 .ro-flag-img{width:22px;height:16px;object-fit:cover;border-radius:2px;
   box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.ro-tname{font-size:12px;font-weight:700;color:var(--text);min-width:60px;
+.ro-tname{font-size:14px;font-weight:700;color:var(--text);min-width:60px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ro-tname:first-of-type{text-align:right}
 .ro-tname:last-of-type{text-align:left}
-.ro-tname.ro-winner{color:#5aaa5e;text-shadow:0 0 8px rgba(90,170,94,.3)}
+.ro-tname.ro-winner{color:#22c55e;text-shadow:0 0 8px rgba(34,197,94,.3)}
 .ro-tname.ro-loser{color:var(--muted);opacity:.6}
 
-.ro-score-box{font-size:16px;font-weight:900;color:var(--gold-light);
+.ro-score-box{font-size:20px;font-weight:900;color:var(--gold-light);
   min-width:44px;text-align:center;letter-spacing:2px;
-  text-shadow:0 0 10px rgba(240,200,112,.3)}
+  text-shadow:0 0 10px rgba(255,51,51,.28)}
 
 .ro-match-meta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
-.ro-winner-tag{font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
-  color:#5aaa5e;background:rgba(90,170,94,.12);padding:2px 8px;border-radius:2px;
-  border:1px solid rgba(90,170,94,.2)}
-.ro-draw-tag{font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--gold);background:rgba(200,160,82,.1);padding:2px 8px;border-radius:2px;
-  border:1px solid rgba(200,160,82,.15)}
+.ro-winner-tag{font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  color:#22c55e;background:rgba(34,197,94,.12);padding:2px 8px;border-radius:2px;
+  border:1px solid rgba(34,197,94,.2)}
+.ro-draw-tag{font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold);background:rgba(220,50,50,.1);padding:2px 8px;border-radius:2px;
+  border:1px solid rgba(220,50,50,.14)}
 
-.ro-bet-badge{font-size:9px;font-weight:900;padding:2px 8px;border-radius:2px;letter-spacing:.5px}
-.ro-bet-won{color:#5aaa5e;background:rgba(90,170,94,.15);border:1px solid rgba(90,170,94,.3);
+.ro-bet-badge{font-size:11px;font-weight:900;padding:2px 8px;border-radius:2px;letter-spacing:.5px}
+.ro-bet-won{color:#22c55e;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);
   animation:ro-bet-glow 1s .5s ease both}
-.ro-bet-lost{color:var(--red);background:rgba(201,68,68,.1);border:1px solid rgba(201,68,68,.2)}
-.ro-bet-push{color:var(--gold);background:rgba(200,160,82,.1);border:1px solid rgba(200,160,82,.2)}
+.ro-bet-lost{color:var(--red);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2)}
+.ro-bet-push{color:var(--gold);background:rgba(220,50,50,.1);border:1px solid rgba(220,50,50,.18)}
 
 @keyframes ro-bet-glow{
   0%,100%{box-shadow:none}
-  50%{box-shadow:0 0 12px rgba(90,170,94,.4)}
+  50%{box-shadow:0 0 12px rgba(34,197,94,.4)}
 }
 
 /* ── Dismiss button ── */
 .ro-dismiss{background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.05));
   border:1px solid rgba(255,255,255,.2);
   color:var(--text);padding:10px 40px;border-radius:4px;cursor:pointer;
-  font-size:12px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;
+  font-size:14px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;
   transition:all .15s;opacity:0;animation:ro-btn-in .3s .8s ease forwards}
 .ro-dismiss:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);
   transform:scale(1.04);box-shadow:0 0 20px rgba(255,255,255,.08)}
@@ -452,10 +454,10 @@
 .floating-payout{position:fixed;pointer-events:none;z-index:9999;
   font-size:22px;font-weight:900;white-space:nowrap;
   animation:float-up 2s ease-out forwards}
-.floating-payout.fp-win{color:#5aaa5e;
-  text-shadow:0 0 14px rgba(90,170,94,.6),0 0 30px rgba(90,170,94,.3),0 2px 8px rgba(0,0,0,.7)}
+.floating-payout.fp-win{color:#22c55e;
+  text-shadow:0 0 14px rgba(34,197,94,.6),0 0 30px rgba(34,197,94,.3),0 2px 8px rgba(0,0,0,.7)}
 .floating-payout.fp-loss{color:var(--red);
-  text-shadow:0 0 10px rgba(201,68,68,.5),0 2px 8px rgba(0,0,0,.6)}
+  text-shadow:0 0 10px rgba(239,68,68,.5),0 2px 8px rgba(0,0,0,.6)}
 
 @keyframes float-up{
   0%{transform:translateY(0) scale(.5);opacity:0}
@@ -472,7 +474,179 @@
   0%{opacity:.3}100%{opacity:0}
 }
 .screen-flash{position:fixed;inset:0;pointer-events:none;z-index:9000}
-.screen-flash-green{background:radial-gradient(circle at 50% 50%,rgba(90,170,94,.5),transparent 70%);
+.screen-flash-green{background:radial-gradient(circle at 50% 50%,rgba(34,197,94,.5),transparent 70%);
   animation:screen-flash-green .7s ease forwards}
-.screen-flash-gold{background:radial-gradient(circle at 50% 50%,rgba(240,200,112,.45),transparent 70%);
+.screen-flash-gold{background:radial-gradient(circle at 50% 50%,rgba(255,51,51,.4),transparent 70%);
   animation:screen-flash-gold .8s ease forwards}
+
+/* ═══════════════════════════════════════════════════════════
+   CHAMPION PREDICTION OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+
+.champ-overlay{
+  position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;
+  opacity:1;transition:opacity .5s;
+}
+.champ-overlay.champ-hidden{opacity:0;pointer-events:none}
+.champ-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 30%,#1a1228 0%,#08060e 70%);
+}
+.champ-content{
+  position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+  max-height:100vh;overflow-y:auto;padding:36px 40px 50px;width:100%;max-width:1400px;
+}
+.champ-trophy{font-size:100px;margin-bottom:10px;filter:drop-shadow(0 0 50px rgba(255,51,51,.4)) drop-shadow(0 0 100px rgba(147,51,234,.2));animation:champ-float 3s ease-in-out infinite}
+@keyframes champ-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.champ-heading{
+  font-size:48px;font-weight:900;letter-spacing:10px;color:#fff;
+  text-transform:uppercase;margin-bottom:6px;text-align:center;
+  text-shadow:0 0 50px rgba(255,51,51,.4),0 0 100px rgba(147,51,234,.2);
+}
+.champ-title{
+  font-size:18px;font-weight:700;letter-spacing:5px;color:var(--muted);
+  margin-bottom:10px;text-align:center;text-transform:uppercase;
+}
+.champ-subtitle{
+  font-size:17px;color:var(--muted);text-align:center;line-height:1.7;margin-bottom:28px;
+}
+.champ-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;
+  width:100%;max-width:1350px;
+}
+.champ-card{
+  display:flex;align-items:center;gap:14px;padding:16px 20px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(220,50,50,.12);border-radius:8px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.champ-card:hover{background:rgba(255,51,51,.06);border-color:rgba(255,51,51,.35);transform:translateY(-2px)}
+.champ-card.champ-selected{
+  background:rgba(147,51,234,.12);border-color:var(--accent-purple);
+  box-shadow:0 0 24px rgba(147,51,234,.25),inset 0 0 20px rgba(255,51,51,.05);
+}
+.champ-card .champ-flag{width:44px;height:30px;object-fit:cover;border-radius:3px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.champ-card .champ-name{font-size:16px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.champ-card .champ-str{font-size:13px;color:var(--muted);margin-left:auto;flex-shrink:0}
+.champ-card.champ-selected .champ-name{color:var(--gold-light)}
+.champ-card.champ-selected::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#ff3333,#9333ea,transparent);
+}
+.champ-confirm-wrap{
+  margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:16px;
+  animation:champ-fade-in .3s ease;
+}
+@keyframes champ-fade-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.champ-selected-preview{
+  display:flex;align-items:center;gap:14px;font-size:22px;font-weight:800;
+  color:var(--gold-light);letter-spacing:1.5px;
+}
+.champ-selected-preview img{width:52px;height:35px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.champ-confirm-btn{
+  padding:18px 64px;font-size:17px;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(135deg,#ff3333,#9333ea);color:#fff;
+  border:none;border-radius:6px;cursor:pointer;text-transform:uppercase;
+  transition:all .2s;box-shadow:0 4px 24px rgba(255,51,51,.35);
+  text-shadow:0 1px 3px rgba(0,0,0,.5);
+}
+.champ-confirm-btn:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(255,51,51,.5)}
+
+/* ── CHAMPION VICTORY OVERLAY ── */
+.champ-victory-overlay{
+  position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;
+  animation:champ-victory-in .5s ease;
+}
+@keyframes champ-victory-in{from{opacity:0}to{opacity:1}}
+.champ-victory-overlay.champ-victory-closing{animation:champ-victory-out .4s ease forwards}
+@keyframes champ-victory-out{to{opacity:0}}
+.champ-victory-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.85)}
+.champ-victory-card{
+  position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+  padding:48px 60px;border-radius:16px;max-width:500px;width:90%;
+  background:linear-gradient(135deg,#1a1228,#160e22);
+  border:2px solid var(--accent-red);
+  box-shadow:0 0 80px rgba(255,51,51,.2),0 0 200px rgba(147,51,234,.1);
+  overflow:hidden;
+}
+.champ-victory-glow{
+  position:absolute;inset:-50%;
+  background:radial-gradient(circle at 50% 40%,rgba(255,51,51,.1) 0%,rgba(147,51,234,.05) 30%,transparent 60%);
+  animation:champ-victory-pulse 2s ease-in-out infinite;
+}
+@keyframes champ-victory-pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.champ-victory-trophy{font-size:80px;position:relative;z-index:1;margin-bottom:12px;
+  filter:drop-shadow(0 0 30px rgba(255,51,51,.5)) drop-shadow(0 0 60px rgba(147,51,234,.3));animation:champ-float 3s ease-in-out infinite}
+.champ-victory-headline{
+  font-size:32px;font-weight:900;letter-spacing:6px;color:#fff;
+  text-shadow:0 0 40px rgba(255,51,51,.5),0 0 80px rgba(147,51,234,.3);margin-bottom:16px;position:relative;z-index:1;
+}
+.champ-victory-team{
+  display:flex;align-items:center;gap:14px;font-size:28px;font-weight:900;
+  color:#fff;margin-bottom:4px;position:relative;z-index:1;
+}
+.champ-victory-flag{width:56px;height:38px;object-fit:cover;border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+.champ-victory-sub{
+  font-size:13px;font-weight:700;letter-spacing:4px;color:var(--muted);
+  margin-bottom:28px;position:relative;z-index:1;
+}
+.champ-victory-reward{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:20px 40px;border-radius:10px;margin-bottom:24px;position:relative;z-index:1;
+  background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.2);
+}
+.champ-victory-reward-label{
+  font-size:11px;font-weight:800;letter-spacing:4px;color:var(--accent-red);
+}
+.champ-victory-coins{
+  font-size:36px;font-weight:900;color:var(--gold-light);
+  text-shadow:0 0 20px rgba(251,191,36,.5);
+}
+.champ-victory-xp{
+  font-size:16px;font-weight:700;color:var(--green);letter-spacing:1px;
+}
+.champ-victory-btn{
+  padding:16px 56px;font-size:16px;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(135deg,#ff3333,#9333ea);color:#fff;
+  border:none;border-radius:6px;cursor:pointer;text-transform:uppercase;
+  transition:all .2s;box-shadow:0 4px 24px rgba(255,51,51,.4);position:relative;z-index:1;
+  text-shadow:0 1px 3px rgba(0,0,0,.5);
+}
+.champ-victory-btn:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(255,51,51,.5)}
+
+/* ── CHAMPION DISPLAY (left panel) ── */
+.lp-champ-card{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 8px;border-radius:8px;
+  background:linear-gradient(135deg,rgba(255,51,51,.06),rgba(147,51,234,.03));
+  border:1px solid rgba(220,50,50,.18);position:relative;overflow:hidden;
+}
+.lp-champ-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#ff3333,#9333ea,transparent);
+}
+.lp-champ-trophy{font-size:24px;filter:drop-shadow(0 0 8px rgba(255,51,51,.4))}
+.lp-champ-flag{display:flex;justify-content:center}
+.lp-champ-flag img{width:48px;height:32px;object-fit:cover;border-radius:3px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.lp-champ-name{font-size:13px;font-weight:800;color:var(--gold-light);letter-spacing:1.5px;text-transform:uppercase}
+.lp-champ-label{font-size:8px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+
+/* ── CHAMPION LOCK-IN BANNER ── */
+.champ-lock-banner{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  font-size:36px;font-weight:900;letter-spacing:8px;color:#fff;
+  text-shadow:0 0 40px rgba(255,51,51,.6),0 0 80px rgba(147,51,234,.3);
+  white-space:nowrap;z-index:10002;pointer-events:none;
+  animation:champ-banner-in .5s cubic-bezier(.175,.885,.32,1.275) forwards;
+}
+@keyframes champ-banner-in{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0}
+  60%{transform:translate(-50%,-50%) scale(1.15);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:1}
+}
+.champ-banner-out{
+  animation:champ-banner-out-kf .4s ease forwards !important;
+}
+@keyframes champ-banner-out-kf{
+  0%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1.3);opacity:0}
+}

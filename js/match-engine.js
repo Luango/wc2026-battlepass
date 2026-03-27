@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // MATCH ENGINE — Minute-by-minute tactical simulation
 // ═══════════════════════════════════════════════════════════
-import { T } from './data/teams.js';
-import { genSquad, getPlayerStats } from './data/squads.js';
-import { FORMATIONS } from './data/formations.js';
+import { T } from './data/teams.js?v=9';
+import { genSquad, getPlayerStats } from './data/squads.js?v=9';
+import { FORMATIONS } from './data/formations.js?v=9';
 
 // Event types the engine can produce
 const EVT = {

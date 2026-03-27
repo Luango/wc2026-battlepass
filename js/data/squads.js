@@ -1,4 +1,4 @@
-import { T } from './teams.js';
+import { T } from './teams.js?v=9';
 
 export const SQUADS={
   FRA:[

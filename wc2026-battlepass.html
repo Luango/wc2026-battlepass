@@ -35,6 +35,15 @@
 
   <!-- LEFT: Battle Pass (normal mode) -->
   <div class="sp" id="left-panel">
+    <div id="lp-champion" class="lp-champ" style="display:none">
+      <div class="sp-title">Champion Pick</div>
+      <div class="lp-champ-card">
+        <div class="lp-champ-trophy">&#127942;</div>
+        <div class="lp-champ-flag" id="lp-champ-flag"></div>
+        <div class="lp-champ-name" id="lp-champ-name"></div>
+        <div class="lp-champ-label">YOUR PREDICTION</div>
+      </div>
+    </div>
     <div>
       <div class="sp-title">Battle Pass</div>
       <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px">
@@ -146,6 +155,22 @@
 <!-- Hidden compat elements for cached old render.js -->
 <div style="display:none"><div id="lp-tiers"></div><div id="hud-xp-fill"></div><div id="hud-prog"></div></div>
 
+<!-- CHAMPION PREDICTION SCREEN -->
+<div id="champion-pick-overlay" class="champ-overlay" style="display:none">
+  <div class="champ-bg"></div>
+  <div class="champ-content">
+    <div class="champ-trophy">&#127942;</div>
+    <div class="champ-heading">WORLD CUP 2026 BATTLE PASS</div>
+    <h1 class="champ-title">PREDICT THE CHAMPION</h1>
+    <p class="champ-subtitle">Pick the nation you believe will lift the FIFA World Cup 2026 trophy.</p>
+    <div class="champ-grid" id="champ-grid"></div>
+    <div class="champ-confirm-wrap" id="champ-confirm-wrap" style="display:none">
+      <div class="champ-selected-preview" id="champ-selected-preview"></div>
+      <button class="champ-confirm-btn" id="champ-confirm-btn" onclick="confirmChampion()">LOCK IN PREDICTION</button>
+    </div>
+  </div>
+</div>
+
 <div id="compare-overlay"></div>
 <div id="result-overlay"></div>
 <div id="reward-overlay"></div>
@@ -178,6 +203,6 @@ if (location.protocol === 'file:') {
   });
 }
 </script>
-<script type="module" src="js/main.js?v=8"></script>
+<script type="module" src="js/main.js?v=9"></script>
 </body>
 </html>

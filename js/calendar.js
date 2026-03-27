@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 // CALENDAR — Day navigation, drag handlers
 // ═══════════════════════════════════════════════════════════
-import { state } from './state.js';
-import { SFX } from './audio-fx.js';
+import { state } from './state.js?v=9';
+import { SFX } from './audio-fx.js?v=9';
 
 let _deps = {};
 export function setCalendarDeps({ renderCalendarHUD, renderMatches }) {

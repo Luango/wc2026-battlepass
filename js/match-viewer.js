@@ -1,14 +1,14 @@
 // ═══════════════════════════════════════════════════════════
 // MATCH VIEWER — Live 2D tactical match simulation UI
 // ═══════════════════════════════════════════════════════════
-import { state, saveState, saveMatches } from './state.js';
-import { T, flagImg } from './data/teams.js';
-import { simulateMatch, EVT, SUBSTEPS } from './match-engine.js';
-import { SFX } from './audio-fx.js';
-import { simResult, simScore, simMatchStats } from './matches.js';
-import { resolveBet } from './betting/settlement.js';
-import { addXP } from './xp.js';
-import { advanceWinner } from './simulation.js';
+import { state, saveState, saveMatches } from './state.js?v=9';
+import { T, flagImg } from './data/teams.js?v=9';
+import { simulateMatch, EVT, SUBSTEPS } from './match-engine.js?v=9';
+import { SFX } from './audio-fx.js?v=9';
+import { simResult, simScore, simMatchStats } from './matches.js?v=9';
+import { resolveBet } from './betting/settlement.js?v=9';
+import { addXP } from './xp.js?v=9';
+import { advanceWinner } from './simulation.js?v=9';
 
 let _deps = {};
 export function setViewerDeps({ updateAll, renderMatches, toast }) {

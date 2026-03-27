@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 // PLAYER STATS — Radar chart, stats view, player comparison
 // ═══════════════════════════════════════════════════════════
-import { getPlayerStats } from './data/squads.js';
-import { T, flagImg, playerAvatar, loadPlayerPhoto } from './data/teams.js';
+import { getPlayerStats } from './data/squads.js?v=9';
+import { T, flagImg, playerAvatar, loadPlayerPhoto } from './data/teams.js?v=9';
 
 const STAT_KEYS   = ['att','tec','sta','def','pow','spd'];
 const STAT_LABELS = ['ATT','TEC','STA','DEF','POW','SPD'];

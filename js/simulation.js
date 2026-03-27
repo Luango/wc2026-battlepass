@@ -1,23 +1,26 @@
 // ═══════════════════════════════════════════════════════════
 // SIMULATION — Settle matches, sim controls, advance bracket
 // ═══════════════════════════════════════════════════════════
-import { state, saveState, saveMatches, loadState, loadMatches, LS_S, LS_M } from './state.js';
-import { T, flagImg } from './data/teams.js';
-import { SFX } from './audio-fx.js';
-import { coinPopAnimation, flashElement, spawnConfetti, shakeElement, animateElement } from './visual-fx.js';
-import { resolveBet } from './betting/settlement.js';
-import { simResult, simScore, simMatchStats, genMatches } from './matches.js';
-import { addXP } from './xp.js';
+import { state, saveState, saveMatches, loadState, loadMatches, LS_S, LS_M } from './state.js?v=9';
+import { T, flagImg } from './data/teams.js?v=9';
+import { SFX } from './audio-fx.js?v=9';
+import { coinPopAnimation, flashElement, spawnConfetti, shakeElement, animateElement } from './visual-fx.js?v=9';
+import { resolveBet } from './betting/settlement.js?v=9';
+import { simResult, simScore, simMatchStats, genMatches } from './matches.js?v=9';
+import { addXP } from './xp.js?v=9';
 
 let _deps = {};
-export function setSimDeps({ updateAll, renderMatches, toast, getAllMatchDays }) {
-  _deps = { updateAll, renderMatches, toast, getAllMatchDays };
+export function setSimDeps({ updateAll, renderMatches, toast, getAllMatchDays, onReset }) {
+  _deps = { updateAll, renderMatches, toast, getAllMatchDays, onReset };
 }
 
 export function advanceWinner(m) {
   const prog = {r32:'r16', r16:'qf', qf:'sf', sf:'final'};
   const nextPh = prog[m.phaseId]; if (!nextPh) return;
-  const winner = m.result==='draw' ? (Math.random()<.5 ? m.home : m.away) : (m.result==='home' ? m.home : m.away);
+  let winner = m.result==='draw' ? (Math.random()<.5 ? m.home : m.away) : (m.result==='home' ? m.home : m.away);
+  // Force predicted champion to always advance
+  const champ = state.ST.champion;
+  if (champ && (m.home === champ || m.away === champ)) winner = champ;
   m.koWinner = winner;
   const thisMs = state.MS.filter(x => x.phaseId === m.phaseId);
   const nextMs = state.MS.filter(x => x.phaseId === nextPh);
@@ -234,6 +237,8 @@ function showResultOverlay(results, forceShow = false) {
   }
 }
 
+let _pendingChampVictory = null;
+
 function closeResultOverlay() {
   const overlay = document.getElementById('result-overlay');
   if (overlay) {
@@ -242,6 +247,12 @@ function closeResultOverlay() {
       overlay.style.display = 'none';
       overlay.className = '';
       overlay.innerHTML = '';
+      // Show queued champion victory after result overlay closes
+      if (_pendingChampVictory) {
+        const { tid, bonus } = _pendingChampVictory;
+        _pendingChampVictory = null;
+        showChampionVictoryOverlay(tid, bonus);
+      }
     }, 300);
   }
 }
@@ -250,9 +261,18 @@ function closeResultOverlay() {
 if (typeof window !== 'undefined') window.closeResultOverlay = closeResultOverlay;
 
 // ── Collect bet results for overlay ──────────────────────
+function forceChampionResult(m, res) {
+  const champ = state.ST.champion;
+  if (!champ || !['r32','r16','qf','sf','final'].includes(m.phaseId)) return res;
+  if (m.home === champ && res !== 'home') return 'home';
+  if (m.away === champ && res !== 'away') return 'away';
+  return res;
+}
+
 function settleWithTracking(m) {
   const h = T[m.home], a = T[m.away];
-  const res = simResult(h.str, a.str);
+  let res = simResult(h.str, a.str);
+  res = forceChampionResult(m, res);
   m.status = 'settled'; m.result = res; m.score = simScore(res);
   m.stats = simMatchStats(m, m.score);
   const bet = state.ST.bets[m.id];
@@ -270,8 +290,93 @@ function settleWithTracking(m) {
     }
   }
   if (['r32','r16','qf','sf'].includes(m.phaseId)) advanceWinner(m);
+  // Check for champion prediction win
+  if (m.phaseId === 'final') checkChampionPrediction(m);
   return { match: m, bet, outcome };
 }
+
+function checkChampionPrediction(m) {
+  const champ = state.ST.champion;
+  if (!champ || state.ST.champRewardClaimed) return;
+  const winner = m.result === 'home' ? m.home : m.result === 'away' ? m.away : null;
+  if (winner === champ) {
+    state.ST.champRewardClaimed = true;
+    const bonus = 10000;
+    state.ST.coins += bonus;
+    addXP(1000);
+    saveState();
+    // Queue victory overlay — shows after user closes the result overlay
+    _pendingChampVictory = { tid: champ, bonus };
+    // Fallback: if no result overlay appears within 3s, show directly
+    setTimeout(() => {
+      if (_pendingChampVictory) {
+        const { tid, bonus } = _pendingChampVictory;
+        _pendingChampVictory = null;
+        showChampionVictoryOverlay(tid, bonus);
+      }
+    }, 3000);
+  }
+}
+
+function showChampionVictoryOverlay(tid, bonus) {
+  const team = T[tid];
+  if (!team) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'champ-victory-overlay';
+  overlay.className = 'champ-victory-overlay';
+  overlay.innerHTML = `
+    <div class="champ-victory-backdrop" onclick="closeChampVictory()"></div>
+    <div class="champ-victory-card">
+      <div class="champ-victory-glow"></div>
+      <div class="champ-victory-confetti-zone"></div>
+      <div class="champ-victory-trophy">🏆</div>
+      <div class="champ-victory-headline">PREDICTION CORRECT</div>
+      <div class="champ-victory-team">
+        ${flagImg(tid, 'champ-victory-flag')}
+        <span>${team.name}</span>
+      </div>
+      <div class="champ-victory-sub">WORLD CHAMPIONS 2026</div>
+      <div class="champ-victory-reward">
+        <div class="champ-victory-reward-label">MEGA REWARD</div>
+        <div class="champ-victory-coins">+${bonus.toLocaleString()} 🪙</div>
+        <div class="champ-victory-xp">+1,000 XP</div>
+      </div>
+      <button class="champ-victory-btn" onclick="closeChampVictory()">CLAIM REWARD</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Confetti bursts
+  setTimeout(() => {
+    const card = overlay.querySelector('.champ-victory-card');
+    if (card) {
+      const r = card.getBoundingClientRect();
+      spawnConfetti(r.left + r.width / 2, r.top + 60, 80);
+      spawnConfetti(r.left + r.width * 0.2, r.top + 40, 40);
+      spawnConfetti(r.left + r.width * 0.8, r.top + 40, 40);
+    }
+  }, 300);
+  setTimeout(() => {
+    const card = overlay.querySelector('.champ-victory-card');
+    if (card) {
+      const r = card.getBoundingClientRect();
+      spawnConfetti(r.left + r.width / 2, r.top + 100, 50);
+    }
+  }, 900);
+
+  SFX.bigWin();
+  setTimeout(() => SFX.chipRain(), 400);
+}
+
+function closeChampVictory() {
+  const el = document.getElementById('champ-victory-overlay');
+  if (el) {
+    el.classList.add('champ-victory-closing');
+    setTimeout(() => el.remove(), 400);
+  }
+  _deps.updateAll();
+}
+if (typeof window !== 'undefined') window.closeChampVictory = closeChampVictory;
 
 // ── Dramatic feedback after batch sim ────────────────────
 function dramaticFeedback(results, coinsBefore) {
@@ -336,7 +441,8 @@ function dramaticFeedback(results, coinsBefore) {
 // ── Single match settle (used by simNext) ────────────────
 export function settle(m) {
   const h = T[m.home], a = T[m.away];
-  const res = simResult(h.str, a.str);
+  let res = simResult(h.str, a.str);
+  res = forceChampionResult(m, res);
   m.status = 'settled'; m.result = res; m.score = simScore(res);
   m.stats = simMatchStats(m, m.score);
   const bet = state.ST.bets[m.id];
@@ -365,6 +471,7 @@ export function settle(m) {
     }
   }
   if (['r32','r16','qf','sf'].includes(m.phaseId)) advanceWinner(m);
+  if (m.phaseId === 'final') checkChampionPrediction(m);
 }
 
 export function simDay() {
@@ -490,4 +597,5 @@ export function resetGame() {
   state.activePhase = 'group';
   state.activeDay = _deps.getAllMatchDays()[0]?.key || '';
   _deps.updateAll(); _deps.renderMatches(); _deps.toast('Reset complete');
+  if (_deps.onReset) _deps.onReset();
 }

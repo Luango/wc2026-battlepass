@@ -5,7 +5,7 @@
 /* ── Overlay ────────────────────────────────────────────── */
 #match-viewer-overlay {
   position: fixed; inset: 0; z-index: 10000;
-  background: rgba(5, 7, 12, 0.98);
+  background: rgba(8, 6, 14, 0.98);
   display: flex; flex-direction: column;
   animation: mv-fade-in 0.3s ease-out;
 }
@@ -24,29 +24,29 @@
 .mv-topbar {
   flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
   padding: 8px 16px; height: 40px;
-  background: linear-gradient(180deg, #0d1018, #090c14);
+  background: linear-gradient(180deg, #12081a, #0a0610);
   border-bottom: 1px solid var(--border);
 }
 .mv-topbar-left { display: flex; align-items: center; gap: 12px; }
 .mv-phase-badge {
-  font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--gold-light); background: rgba(200, 160, 82, 0.12);
-  border: 1px solid rgba(200, 160, 82, 0.3); border-radius: 2px;
+  font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--accent-red); background: rgba(255,51,51,.1);
+  border: 1px solid rgba(255,51,51,.3); border-radius: 2px;
   padding: 2px 10px;
 }
-.mv-venue-text { font-size: 11px; color: var(--muted); }
+.mv-venue-text { font-size: 12px; color: var(--muted); }
 .mv-close-btn {
-  background: rgba(200, 60, 60, 0.1); border: 1px solid rgba(200, 60, 60, 0.4);
-  color: #e08080; font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+  background: rgba(255,51,51,.1); border: 1px solid rgba(255,51,51,.4);
+  color: #ff6b6b; font-size: 12px; font-weight: 800; letter-spacing: 1.5px;
   padding: 4px 14px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
 }
-.mv-close-btn:hover { background: rgba(200, 60, 60, 0.2); border-color: rgba(200, 60, 60, 0.6); }
+.mv-close-btn:hover { background: rgba(255,51,51,.2); border-color: rgba(255,51,51,.6); }
 
 /* ── Scoreboard ─────────────────────────────────────────── */
 .mv-scoreboard {
   flex-shrink: 0; display: flex; align-items: center; justify-content: center;
   padding: 10px 20px; gap: 24px;
-  background: linear-gradient(180deg, #0a0e16, #070a10);
+  background: linear-gradient(180deg, #0c0814, #08060e);
   border-bottom: 1px solid var(--border);
 }
 .mv-sb-team { display: flex; align-items: center; gap: 10px; flex: 1; }
@@ -58,9 +58,9 @@
 }
 .mv-sb-center { text-align: center; min-width: 120px; }
 .mv-sb-score {
-  font-size: 36px; font-weight: 900; color: var(--gold-light);
+  font-size: 36px; font-weight: 900; color: #fff;
   letter-spacing: 4px; line-height: 1;
-  text-shadow: 0 0 30px rgba(240, 200, 112, 0.3);
+  text-shadow: 0 0 30px rgba(255,51,51,.4),0 0 60px rgba(147,51,234,.2);
 }
 .mv-sb-clock {
   font-size: 14px; font-weight: 700; color: var(--green);
@@ -80,10 +80,11 @@
 
 /* ── Pitch ──────────────────────────────────────────────── */
 .mv-pitch {
-  flex: 1; position: relative; border-radius: 6px; overflow: hidden;
+  flex: 0; position: relative; border-radius: 6px; overflow: hidden;
   background: linear-gradient(180deg, #1a5c1a, #145014);
   border: 2px solid rgba(255, 255, 255, 0.15);
-  min-height: 200px;
+  min-height: 200px; aspect-ratio: 1.5;
+  width: 100%; max-height: 100%;
 }
 /* Grass stripes */
 .mv-pitch::before {
@@ -176,16 +177,19 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 .mv-player.home {
-  background: radial-gradient(circle at 40% 30%, #e8c44a, #9b7425);
-  border: 2px solid rgba(232, 196, 74, 0.7);
+  background: radial-gradient(circle at 40% 30%, #fbbf24, #d97706);
+  border: 2px solid rgba(251,191,36,.7);
+  box-shadow: 0 2px 8px rgba(251,191,36,.3);
 }
 .mv-player.away {
-  background: radial-gradient(circle at 40% 30%, #5fa8ea, #2a5580);
-  border: 2px solid rgba(95, 168, 234, 0.7);
+  background: radial-gradient(circle at 40% 30%, #38bdf8, #0284c7);
+  border: 2px solid rgba(56,189,248,.7);
+  box-shadow: 0 2px 8px rgba(56,189,248,.3);
 }
 .mv-player.gk {
-  background: radial-gradient(circle at 40% 30%, #e8844a, #8f4b22) !important;
-  border-color: rgba(232, 132, 74, 0.7) !important;
+  background: radial-gradient(circle at 40% 30%, #f97316, #c2410c) !important;
+  border-color: rgba(249,115,22,.7) !important;
+  box-shadow: 0 2px 8px rgba(249,115,22,.3);
 }
 .mv-player-num {
   font-size: 10px; font-weight: 900; line-height: 1;
@@ -201,7 +205,7 @@
 /* ── Pitch flash effects ────────────────────────────────── */
 .mv-flash-goal::after {
   content: ''; position: absolute; inset: 0; z-index: 20;
-  background: radial-gradient(circle, rgba(240, 200, 100, 0.3), transparent 70%);
+  background: radial-gradient(circle, rgba(255,51,51,.25), transparent 70%);
   animation: mv-flash 1.2s ease-out forwards; pointer-events: none;
 }
 .mv-flash-red::after {
@@ -231,21 +235,21 @@
 .mv-stat-val {
   font-size: 12px; font-weight: 800; min-width: 28px; text-align: center;
 }
-.mv-stat-h { color: #e8c44a; }
-.mv-stat-a { color: #5fa8ea; }
+.mv-stat-h { color: #fbbf24; }
+.mv-stat-a { color: #38bdf8; }
 
 /* ── Event Log Panel ────────────────────────────────────── */
 .mv-log-panel {
   display: flex; flex-direction: column;
   border-left: 1px solid var(--border);
-  background: linear-gradient(180deg, #0b0f18, #080b12);
+  background: linear-gradient(180deg, #0c0814, #0a0610);
   overflow: hidden;
 }
 .mv-log-head {
   flex-shrink: 0; padding: 10px 14px;
   font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gold-light);
-  background: linear-gradient(180deg, #0f1520, #0c1018);
+  color: var(--accent-red);
+  background: linear-gradient(180deg, #12081a, #0e081a);
   border-bottom: 1px solid var(--border);
 }
 .mv-log-list {
@@ -291,7 +295,7 @@
 }
 .mv-log-penalty {
   background: rgba(200, 100, 50, 0.06);
-  border-left: 3px solid #e8844a;
+  border-left: 3px solid #f97316;
   padding-left: 9px;
 }
 .mv-log-half, .mv-log-full {
@@ -311,22 +315,22 @@
 .mv-controls {
   flex-shrink: 0; display: flex; align-items: center; gap: 6px;
   padding: 8px 16px; height: 46px;
-  background: linear-gradient(180deg, #0d1018, #090c14);
+  background: linear-gradient(180deg, #12081a, #0a0610);
   border-top: 1px solid var(--border);
 }
 .mv-ctrl-btn {
-  background: rgba(200, 160, 82, 0.08);
-  border: 1px solid rgba(200, 160, 82, 0.3);
-  color: var(--gold-light); font-size: 12px; font-weight: 800;
+  background: rgba(255,51,51,.06);
+  border: 1px solid rgba(255,51,51,.25);
+  color: var(--accent-red); font-size: 12px; font-weight: 800;
   padding: 5px 14px; border-radius: 3px; cursor: pointer;
   transition: all 0.15s; letter-spacing: 0.5px;
 }
-.mv-ctrl-btn:hover { background: rgba(200, 160, 82, 0.15); border-color: rgba(200, 160, 82, 0.5); }
+.mv-ctrl-btn:hover { background: rgba(255,51,51,.12); border-color: rgba(255,51,51,.4); }
 .mv-ctrl-btn.active {
-  background: rgba(200, 160, 82, 0.2);
-  border-color: var(--gold);
-  color: var(--gold-light);
-  box-shadow: 0 0 8px rgba(200, 160, 82, 0.2);
+  background: rgba(147,51,234,.15);
+  border-color: var(--accent-purple);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(147,51,234,.2);
 }
 .mv-progress-wrap {
   flex: 1; display: flex; align-items: center; gap: 10px; margin-left: 8px;
@@ -337,8 +341,9 @@
 }
 .mv-progress-fill {
   height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+  background: linear-gradient(90deg, #ff3333, #9333ea);
   transition: width 0.3s ease;
+  box-shadow: 0 0 6px rgba(255,51,51,.3);
 }
 .mv-progress-lbl {
   font-size: 10px; font-weight: 700; color: var(--muted);
@@ -349,15 +354,15 @@
 .mv-summary-overlay {
   position: absolute; inset: 0; z-index: 100;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(5, 7, 12, 0.85);
+  background: rgba(8, 6, 14, 0.85);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   animation: mv-fade-in 0.4s ease-out;
 }
 .mv-summary-card {
-  background: linear-gradient(180deg, #111825, #0a0e18);
-  border: 1px solid rgba(200, 160, 82, 0.5); border-radius: 12px;
+  background: linear-gradient(180deg, #110d18, #0c0814);
+  border: 1px solid rgba(255,51,51,.4); border-radius: 12px;
   padding: 28px 36px; text-align: center; min-width: 400px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(200, 160, 82, 0.12);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255,51,51,.08);
   animation: mv-card-enter 0.5s ease-out;
 }
 @keyframes mv-card-enter {
@@ -378,7 +383,7 @@
 }
 .mv-summary-result {
   font-size: 40px; font-weight: 900; color: var(--gold-light);
-  letter-spacing: 4px; text-shadow: 0 0 30px rgba(240, 200, 112, 0.3);
+  letter-spacing: 4px; text-shadow: 0 0 30px rgba(255,51,51,.4);
 }
 .mv-summary-winner {
   font-size: 18px; font-weight: 900; color: var(--gold);
@@ -399,20 +404,20 @@
   transition: all 0.15s;
 }
 .mv-summary-close-btn {
-  background: linear-gradient(180deg, #2a5a2a, #1a3a1a);
+  background: linear-gradient(180deg, #1a3a2a, #0d2a1a);
   border: 1px solid rgba(90, 170, 94, 0.5); color: var(--green);
 }
-.mv-summary-close-btn:hover { background: linear-gradient(180deg, #3a6a3a, #2a4a2a); }
+.mv-summary-close-btn:hover { background: linear-gradient(180deg, #2a4a2a, #2a4a2a); }
 .mv-summary-log-btn {
-  background: linear-gradient(180deg, #1a2540, #121a30);
+  background: linear-gradient(180deg, #1a1228, #110d18);
   border: 1px solid rgba(200, 160, 82, 0.3); color: var(--gold-light);
 }
-.mv-summary-log-btn:hover { background: linear-gradient(180deg, #2a3550, #1a2540); }
+.mv-summary-log-btn:hover { background: linear-gradient(180deg, #2a1a3a, #1a1228); }
 
 /* ── Watch Match Button (on match cards) ────────────────── */
 .mc-watch-btn {
   display: inline-flex; align-items: center; gap: 4px;
-  background: linear-gradient(180deg, #1a3a1a, #0f2a0f);
+  background: linear-gradient(180deg, #0d2a1a, #061a0e);
   border: 1px solid rgba(90, 170, 94, 0.4);
   color: var(--green); font-size: 9px; font-weight: 900;
   letter-spacing: 1px; padding: 4px 10px;
@@ -420,7 +425,7 @@
   text-transform: uppercase;
 }
 .mc-watch-btn:hover {
-  background: linear-gradient(180deg, #2a5a2a, #1a3a1a);
+  background: linear-gradient(180deg, #1a3a2a, #0d2a1a);
   border-color: rgba(90, 170, 94, 0.7);
   box-shadow: 0 0 10px rgba(90, 170, 94, 0.2);
 }

@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // MATCHES — Generation, simulation helpers, stats
 // ═══════════════════════════════════════════════════════════
-import { TEAMS, T } from './data/teams.js';
-import { WC_VENUES, WC_REFS, WC_TIMES } from './data/phases.js';
-import { genSquad, seededRand } from './data/squads.js';
+import { TEAMS, T } from './data/teams.js?v=9';
+import { WC_VENUES, WC_REFS, WC_TIMES } from './data/phases.js?v=9';
+import { genSquad, seededRand } from './data/squads.js?v=9';
 
 export function genMatches() {
   const ms = []; let id = 1;

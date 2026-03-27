@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // BRACKET — Knockout bracket overlay rendering
 // ═══════════════════════════════════════════════════════════
-import { state } from './state.js';
-import { T, flagImg } from './data/teams.js';
-import { SFX } from './audio-fx.js';
+import { state } from './state.js?v=9';
+import { T, flagImg } from './data/teams.js?v=9';
+import { SFX } from './audio-fx.js?v=9';
 
 let _deps = {};
 export function setBracketDeps({ openPreview }) {

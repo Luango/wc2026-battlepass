@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════
 // BET SETTLEMENT — Resolve bet outcomes
 // ═══════════════════════════════════════════════════════════
-import { calcSpreadLine } from './odds.js';
-import { T } from '../data/teams.js';
+import { calcSpreadLine } from './odds.js?v=9';
+import { T } from '../data/teams.js?v=9';
 
 export function resolveBet(bet,m,res,score,stats){
   const type=bet.type||'match';
@@ -48,11 +48,29 @@ export function resolveBet(bet,m,res,score,stats){
     const parts=bet.pick.replace('es_','').split('_');
     return(hg===+parts[0]&&ag===+parts[1])?'won':'lost';
   }
+  // Formation — winning team's formation wins the bet
+  if(type==='formation'){
+    if(res==='draw')return'push';
+    if(bet.pick==='form_home')return res==='home'?'won':'lost';
+    return res==='away'?'won':'lost';
+  }
   // Anytime Goalscorer
   if(type==='scorer'){
     const name=bet.pick.replace('gs_','');
     const scored=stats.goals.some(g=>g.player===name);
     return scored?'won':'lost';
+  }
+  // Starting XI
+  if(type==='starting11'){
+    const name=bet.pick.replace('s11_','');
+    const inLineup=stats.lineup?.some(p=>p.player===name);
+    return inLineup?'won':'lost';
+  }
+  // MVP (Player of the Match)
+  if(type==='mvp'){
+    const name=bet.pick.replace('mvp_','');
+    const mvpName=stats.mvp?.player;
+    return mvpName===name?'won':'lost';
   }
   return'lost';
 }
